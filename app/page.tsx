@@ -47,7 +47,7 @@ const RequestInputs = ({
 }: RequestInputsProps) => (
   <>
     <Select>
-      <SelectTrigger className="w-full max-w-48">
+      <SelectTrigger className="font-semibold w-full max-w-48">
         <SelectValue placeholder={method} />
       </SelectTrigger>
       <SelectContent>
@@ -66,7 +66,11 @@ const RequestInputs = ({
       value={url}
       onChange={(e) => setUrl(e.target.value)}
     />
-    <Button type="submit" onClick={() => console.log(url)}>
+    <Button
+      className="font-semibold"
+      type="submit"
+      onClick={() => console.log(url)}
+    >
       Send
     </Button>
   </>
@@ -104,7 +108,7 @@ export default function Home() {
           />
         </div>
         <Tabs defaultValue={tabs[0]} className="w-100">
-          <TabsList>
+          <TabsList variant="line" className="mb-4">
             {tabs.map((tab) => (
               <TabsTrigger key={tab} value={tab}>
                 {tab}
