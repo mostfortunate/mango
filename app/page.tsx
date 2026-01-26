@@ -90,7 +90,7 @@ export default function Home() {
             ))}
           </TabsList>
           <TabsContent value="Query Params">
-            <Card className="gap-4">
+            <Card>
               <CardHeader>
                 <CardTitle>Query Parameters</CardTitle>
                 <CardDescription>
