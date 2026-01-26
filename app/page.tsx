@@ -30,64 +30,6 @@ type QueryParam = {
   value: string;
 };
 
-type RequestInputsProps = {
-  url: string;
-  setUrl: (url: string) => void;
-  method: string;
-  methods: string[];
-  setMethod: (method: string) => void;
-};
-
-const RequestInputs = ({
-  method,
-  setMethod,
-  url,
-  setUrl,
-  methods,
-}: RequestInputsProps) => (
-  <>
-    <Select>
-      <SelectTrigger className="font-semibold w-full max-w-48">
-        <SelectValue placeholder={method} />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          {methods.map((m) => (
-            <SelectItem key={m} value={m} onSelect={() => setMethod(m)}>
-              {m}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
-    <Input
-      type="url"
-      placeholder="https://example.com"
-      value={url}
-      onChange={(e) => setUrl(e.target.value)}
-    />
-    <Button
-      className="font-semibold"
-      type="submit"
-      onClick={() => console.log(url)}
-    >
-      Send
-    </Button>
-  </>
-);
-
-const QueryParamEntry = () => (
-  <>
-    <div className="flex flex-row items-center gap-2">
-      <Input placeholder="Key" />
-      <Input placeholder="Value" />
-      <Button variant="destructive" size="sm">
-        Remove
-      </Button>
-    </div>
-  </>
-);
-
 export default function Home() {
   const [url, setUrl] = useState<string>("");
   const [method, setMethod] = useState<string>("GET");
@@ -95,19 +37,51 @@ export default function Home() {
   const methods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
   const tabs = ["Query Params", "Headers", "JSON"];
 
+  const updateQueryParam = (index: number, updates: Partial<QueryParam>) => {
+    setQueryParams((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], ...updates };
+      return next;
+    });
+  };
+
+  const deleteQueryParam = (index: number) => {
+    setQueryParams((prev) => prev.filter((_, i) => i !== index));
+  };
+
   return (
     <>
       <div className="flex flex-col gap-4 p-4">
         <div className="flex flex-row gap-4">
-          <RequestInputs
-            method={method}
-            methods={methods}
-            setMethod={setMethod}
-            url={url}
-            setUrl={setUrl}
+          <Select>
+            <SelectTrigger className="font-semibold w-full max-w-48">
+              <SelectValue placeholder={method} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {methods.map((m) => (
+                  <SelectItem key={m} value={m} onSelect={() => setMethod(m)}>
+                    {m}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Input
+            type="url"
+            placeholder="https://example.com"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
           />
+          <Button
+            className="font-semibold"
+            type="submit"
+            onClick={() => console.log(url)}
+          >
+            Send
+          </Button>
         </div>
-        <Tabs defaultValue={tabs[0]} className="w-100">
+        <Tabs defaultValue={tabs[0]} className="w-full">
           <TabsList variant="line" className="mb-4">
             {tabs.map((tab) => (
               <TabsTrigger key={tab} value={tab}>
@@ -117,12 +91,47 @@ export default function Home() {
           </TabsList>
           <TabsContent value="Query Params">
             <Card className="gap-4">
-              <CardContent>
-                <QueryParamEntry />
+              <CardHeader>
+                <CardTitle>Query Parameters</CardTitle>
+                <CardDescription>
+                  Add, edit, or remove query parameters for your request.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-2">
+                {queryParams.map((param, index) => (
+                  <div key={index} className="flex flex-row items-center gap-2">
+                    <Input
+                      placeholder="Key"
+                      value={param.key}
+                      onChange={(e) =>
+                        updateQueryParam(index, { key: e.target.value })
+                      }
+                    />
+                    <Input
+                      placeholder="Value"
+                      value={param.value}
+                      onChange={(e) =>
+                        updateQueryParam(index, { value: e.target.value })
+                      }
+                    />
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => deleteQueryParam(index)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
               </CardContent>
               <CardFooter>
                 <CardAction className="w-full">
-                  <Button variant="outline" size="sm">
+                  <Button
+                    size="sm"
+                    onClick={() =>
+                      setQueryParams([...queryParams, { key: "", value: "" }])
+                    }
+                  >
                     Add
                   </Button>
                 </CardAction>
