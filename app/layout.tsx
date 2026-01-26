@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fira_Code } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/mode-toggle";
+import { Footer } from "@/components/footer";
 import "./globals.css";
 
 const firaCode = Fira_Code({
@@ -32,11 +33,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="flex-1">{children}</div>
-          <footer className="p-2">
-            <p className="text-center text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Mango. All rights reserved.
-            </p>
-          </footer>
+          <Footer />
           <div className="fixed bottom-0 right-0 p-4">
             <ModeToggle />
           </div>
