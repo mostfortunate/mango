@@ -43,7 +43,7 @@ export default function Home() {
   const [queryParams, setQueryParams] = useState<QueryParam[]>([]);
   const [headers, setHeaders] = useState<Header[]>([]);
   const methods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-  const tabs = ["Query Params", "Headers", "JSON"];
+  const requestTabs = ["Query Params", "Headers", "JSON"];
 
   // MARK: Helpers
   function updateAt<T>(arr: T[], index: number, updates: Partial<T>): T[] {
@@ -120,9 +120,9 @@ export default function Home() {
             Send
           </Button>
         </div>
-        <Tabs defaultValue={tabs[0]} className="w-full">
+        <Tabs defaultValue={requestTabs[0]} className="w-full">
           <TabsList variant="line" className="mb-4">
-            {tabs.map((tab) => (
+            {requestTabs.map((tab) => (
               <TabsTrigger key={tab} value={tab}>
                 {tab}
               </TabsTrigger>
