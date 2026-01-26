@@ -42,6 +42,7 @@ export default function Home() {
   const [method, setMethod] = useState<string>("GET");
   const [queryParams, setQueryParams] = useState<QueryParam[]>([]);
   const [headers, setHeaders] = useState<Header[]>([]);
+  const [response, setResponse] = useState<AxiosResponse | null>(null);
   const methods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
   const requestTabs = ["Params", "Headers", "JSON"];
   const responseTabs = ["Body", "Headers"];
@@ -92,6 +93,7 @@ export default function Home() {
       headers: keyValueArrayToObject(headers),
     }).then((response: AxiosResponse) => {
       console.log(response);
+      setResponse(response);
     });
   };
 
@@ -230,39 +232,55 @@ export default function Home() {
             </Card>
           </TabsContent>
         </Tabs>
-
-        <Tabs defaultValue={responseTabs[0]} className="w-full">
-          <TabsList variant="line" className="mb-4 w-full flex items-center">
-            <div>
-              {responseTabs.map((tab) => (
-                <TabsTrigger key={tab} value={tab}>
-                  {tab}
-                </TabsTrigger>
-              ))}
-            </div>
-            <div className="flex gap-4 text-xs font-semibold ml-auto">
-              <span>200 OK</span>
-              <span>515 ms</span>
-              <span>123 B</span>
-            </div>
-          </TabsList>
-          <TabsContent value="Body">
-            <Card>
-              <CardContent className="flex flex-col gap-2"></CardContent>
-              <CardFooter>
-                <CardAction className="w-full"></CardAction>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-          <TabsContent value="Headers">
-            <Card>
-              <CardContent className="flex flex-col gap-2"></CardContent>
-              <CardFooter>
-                <CardAction className="w-full"></CardAction>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        {response && (
+          <Tabs defaultValue={responseTabs[0]} className="w-full">
+            <TabsList variant="line" className="mb-4 w-full flex items-center">
+              <div>
+                {responseTabs.map((tab) => (
+                  <TabsTrigger key={tab} value={tab}>
+                    {tab}
+                  </TabsTrigger>
+                ))}
+              </div>
+              <div className="flex gap-4 text-xs font-semibold ml-auto">
+                {/* <span>200 OK</span> */}
+                <span>
+                  {response.status} {response.statusText}
+                </span>
+                <span>515 ms</span>
+                <span>123 B</span>
+              </div>
+            </TabsList>
+            <TabsContent value="Body">
+              <Card>
+                <CardContent className="flex flex-col gap-2"></CardContent>
+                <CardFooter>
+                  <CardAction className="w-full"></CardAction>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+            <TabsContent value="Headers">
+              <Card>
+                <CardContent className="flex flex-col gap-2">
+                  {Object.entries(response.headers).map(
+                    ([key, value], index) => (
+                      <div
+                        key={index}
+                        className="flex flex-row items-center gap-2"
+                      >
+                        <Input readOnly value={key} />
+                        <Input readOnly value={value} />
+                      </div>
+                    ),
+                  )}
+                </CardContent>
+                <CardFooter>
+                  <CardAction className="w-full"></CardAction>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        )}
       </div>
     </>
   );
