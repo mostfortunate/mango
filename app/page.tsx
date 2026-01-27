@@ -323,6 +323,12 @@ export default function Home() {
             </TabsList>
             <TabsContent value="Body">
               <Card>
+                <CardHeader>
+                  <CardTitle>Response Body</CardTitle>
+                  <CardDescription>
+                    View the JSON response body from your request.
+                  </CardDescription>
+                </CardHeader>
                 <CardContent className="flex flex-col gap-2">
                   <CodeMirror
                     value={responseBody}
