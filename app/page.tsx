@@ -292,24 +292,38 @@ export default function Home() {
                   </div>
                   <div className="flex flex-row gap-2">
                     <CardAction>
-                      <Button
-                        variant="secondary"
-                        className="hover:bg-muted/90 hover:text-secondary transition-colors"
-                        size="icon-xs"
-                        aria-label="Paste request body"
-                      >
-                        <ClipboardPaste />
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="secondary"
+                            className="hover:bg-muted/90 hover:text-secondary transition-colors"
+                            size="icon-xs"
+                            aria-label="Paste request body"
+                          >
+                            <ClipboardPaste />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Paste</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </CardAction>
                     <CardAction>
-                      <Button
-                        variant="destructive"
-                        className="hover:bg-muted/90 hover:text-destructive transition-colors"
-                        size="icon-xs"
-                        aria-label="Remove request body"
-                      >
-                        <Trash2 />
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="destructive"
+                            className="hover:bg-muted/90 hover:text-destructive transition-colors"
+                            size="icon-xs"
+                            aria-label="Remove request body"
+                          >
+                            <Trash2 />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Clear</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </CardAction>
                   </div>
                 </CardHeader>
@@ -362,14 +376,21 @@ export default function Home() {
                     </CardDescription>
                   </div>
                   <CardAction>
-                    <Button
-                      variant="secondary"
-                      className="hover:bg-muted/90 hover:text-secondary transition-colors"
-                      size="icon-xs"
-                      aria-label="Copy response body"
-                    >
-                      <Copy />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="secondary"
+                          className="hover:bg-muted/90 hover:text-secondary transition-colors"
+                          size="icon-xs"
+                          aria-label="Copy response body"
+                        >
+                          <Copy />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Copy</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </CardAction>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2">
