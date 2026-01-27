@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { status } from "http-status";
 import axios, { type AxiosResponse } from "axios";
 
 import {
@@ -68,6 +69,13 @@ export default function Home() {
     return obj;
   }
 
+  function updateEndTime(response: AxiosResponse): AxiosResponse {
+    response.customData = response.customData || {};
+    response.customData.time =
+      new Date().getTime() - response.config.customData.startTime;
+    return response;
+  }
+
   // MARK: Handlers
   const updateQueryParam = (index: number, updates: Partial<QueryParam>) => {
     setQueryParams((prev) => updateAt(prev, index, updates));
@@ -86,6 +94,8 @@ export default function Home() {
   };
 
   const sendRequest = () => {
+    // TODO: add proper validation
+    if (!url) return;
     axios({
       url: url,
       method: method.toLowerCase(),
@@ -96,6 +106,16 @@ export default function Home() {
       setResponse(response);
     });
   };
+
+  axios.interceptors.request.use((request) => {
+    request.customData = request.customData || {};
+    request.customData.startTime = new Date().getTime();
+    return request;
+  });
+
+  axios.interceptors.response.use(updateEndTime, (e) => {
+    return Promise.reject(updateEndTime(e.response));
+  });
 
   return (
     <>
@@ -244,9 +264,13 @@ export default function Home() {
               </div>
               <div className="flex gap-4 text-xs font-semibold ml-auto">
                 <span>
-                  {response.status} {response.statusText}
+                  {response.status}{" "}
+                  {/* definitely need to refactor this, it's confusing, essentially TypeScript is mad that status[response.status] is potentially nil, even though that will not be the case 99.999% of the time - and using the backup "" also doesn't silence it */}
+                  {response.statusText === ""
+                    ? (status as any)[response.status] || ""
+                    : response.statusText}
                 </span>
-                <span>515 ms</span>
+                <span>{response.customData.time} ms</span>
                 <span>123 B</span>
               </div>
             </TabsList>
