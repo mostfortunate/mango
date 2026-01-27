@@ -252,6 +252,24 @@ export default function Home() {
               </CardFooter>
             </Card>
           </TabsContent>
+          <TabsContent value="JSON">
+            <TabsContent value="JSON">
+              <Card>
+                <CardHeader>
+                  <CardTitle>JSON</CardTitle>
+                  <CardDescription>
+                    Edit JSON data for your request.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-2">
+                  <></>
+                </CardContent>
+                <CardFooter>
+                  <CardAction className="w-full"></CardAction>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+          </TabsContent>
         </Tabs>
         {response && (
           <Tabs defaultValue={responseTabs[0]} className="w-full">
