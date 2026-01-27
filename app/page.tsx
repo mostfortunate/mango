@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { status } from "http-status";
+import prettyBytes from "pretty-bytes";
 import axios, { type AxiosResponse } from "axios";
 
 import {
@@ -271,7 +272,12 @@ export default function Home() {
                     : response.statusText}
                 </span>
                 <span>{response.customData.time} ms</span>
-                <span>123 B</span>
+                <span>
+                  {prettyBytes(
+                    JSON.stringify(response.data).length +
+                      JSON.stringify(response.headers).length,
+                  )}
+                </span>
               </div>
             </TabsList>
             <TabsContent value="Body">
