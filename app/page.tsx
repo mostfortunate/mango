@@ -94,7 +94,7 @@ export default function Home() {
   };
 
   const sendRequest = () => {
-    // TODO: add proper validation
+    // TODO: add proper validation and error handling and make it async
     if (!url) return;
     axios({
       url: url,
