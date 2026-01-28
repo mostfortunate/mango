@@ -8,15 +8,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ClipboardPaste, Trash2, Trash } from "lucide-react";
-import CodeMirror from "@uiw/react-codemirror";
+
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+import JSONEditor from "@/components/JSONEditor";
+
+import { ClipboardPaste, Trash2, Trash } from "lucide-react";
 
 interface QueryParam {
   key: string;
@@ -39,7 +43,6 @@ interface RequestTabsProps {
   setHeaders: (headers: Header[]) => void;
   requestBody: string;
   onRequestBodyChange: (body: string) => void;
-  editorConfig: any;
 }
 
 const requestTabs = ["Params", "Headers", "JSON"];
@@ -55,7 +58,6 @@ const RequestTabs = ({
   setHeaders,
   requestBody,
   onRequestBodyChange,
-  editorConfig,
 }: RequestTabsProps) => {
   return (
     <Tabs defaultValue={requestTabs[0]} className="w-full">
@@ -207,11 +209,7 @@ const RequestTabs = ({
             </div>
           </CardHeader>
           <CardContent>
-            <CodeMirror
-              value={requestBody}
-              onChange={onRequestBodyChange}
-              {...editorConfig}
-            />
+            <JSONEditor value={requestBody} onChange={onRequestBodyChange} />
           </CardContent>
         </Card>
       </TabsContent>

@@ -1,4 +1,5 @@
 import { type AxiosResponse } from "axios";
+import prettyBytes from "pretty-bytes";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -9,22 +10,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Copy } from "lucide-react";
-import CodeMirror from "@uiw/react-codemirror";
+
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import prettyBytes from "pretty-bytes";
+
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+import JSONEditor from "@/components/JSONEditor";
+import { Copy } from "lucide-react";
 
 interface ResponseTabsProps {
   response: AxiosResponse;
   responseBody: string;
   getStatusText: (res: AxiosResponse) => string;
-  editorSettings: any;
 }
 
 const responseTabs = ["Body", "Headers"];
@@ -33,7 +35,6 @@ const ResponseTabs = ({
   response,
   responseBody,
   getStatusText,
-  editorSettings,
 }: ResponseTabsProps) => {
   if (!response) return <></>;
   return (
@@ -87,11 +88,7 @@ const ResponseTabs = ({
             </CardAction>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <CodeMirror
-              value={responseBody}
-              editable={false}
-              {...editorSettings}
-            />
+            <JSONEditor value={responseBody} editable={false} />
           </CardContent>
         </Card>
       </TabsContent>
