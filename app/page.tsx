@@ -70,6 +70,10 @@ export default function Home() {
       outline: "none",
     },
   });
+  const editorSettings = {
+    extensions: [json(), noFocusOutlineRule],
+    theme: resolvedTheme === "dark" ? githubDark : githubLight,
+  };
 
   // MARK: Helpers
   function updateAt<T>(arr: T[], index: number, updates: Partial<T>): T[] {
@@ -341,8 +345,7 @@ export default function Home() {
                   <CodeMirror
                     value={requestBody}
                     onChange={onRequestBodyChange}
-                    extensions={[json(), noFocusOutlineRule]}
-                    theme={resolvedTheme === "dark" ? githubDark : githubLight}
+                    {...editorSettings}
                   />
                 </CardContent>
               </Card>
@@ -406,9 +409,8 @@ export default function Home() {
                 <CardContent className="flex flex-col gap-2">
                   <CodeMirror
                     value={responseBody}
-                    extensions={[json(), noFocusOutlineRule]}
                     editable={false}
-                    theme={resolvedTheme === "dark" ? githubDark : githubLight}
+                    {...editorSettings}
                   />
                 </CardContent>
               </Card>
