@@ -52,15 +52,17 @@ type Header = {
   value: string;
 };
 
+type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+
 export default function Home() {
   const [url, setUrl] = useState<string>("");
-  const [method, setMethod] = useState<string>("GET");
+  const [method, setMethod] = useState<HTTPMethod>("GET");
   const [queryParams, setQueryParams] = useState<QueryParam[]>([]);
   const [requestBody, setRequestBody] = useState<string>("");
   const [responseBody, setResponseBody] = useState<string>("");
   const [headers, setHeaders] = useState<Header[]>([]);
   const [response, setResponse] = useState<AxiosResponse | null>(null);
-  const methods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+  const methods: HTTPMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
   const requestTabs = ["Params", "Headers", "JSON"];
   const responseTabs = ["Body", "Headers"];
 
