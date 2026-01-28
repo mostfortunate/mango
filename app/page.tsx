@@ -36,10 +36,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Copy, ClipboardPaste, Trash2, Trash } from "lucide-react";
+import { Copy } from "lucide-react";
 
 import { HTTPMethod } from "@/app/types/http";
 import RequestForm from "@/components/RequestForm";
+import RequestTabs from "@/components/RequestTabs";
 
 type QueryParam = {
   key: string;
@@ -63,7 +64,6 @@ export default function Home() {
   const [headers, setHeaders] = useState<Header[]>([]);
   const [response, setResponse] = useState<AxiosResponse | null>(null);
   const methods: HTTPMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-  const requestTabs = ["Params", "Headers", "JSON"];
   const responseTabs = ["Body", "Headers"];
 
   const { resolvedTheme } = useTheme();
@@ -72,7 +72,8 @@ export default function Home() {
       outline: "none",
     },
   });
-  const editorSettings = {
+
+  const editorConfig = {
     extensions: [json(), noFocusOutlineRule],
     theme: resolvedTheme === "dark" ? githubDark : githubLight,
   };
@@ -187,170 +188,19 @@ export default function Home() {
           methods={methods}
           onSend={sendRequest}
         />
-        <Tabs defaultValue={requestTabs[0]} className="w-full">
-          <TabsList variant="line" className="mb-4">
-            {requestTabs.map((tab) => (
-              <TabsTrigger key={tab} value={tab}>
-                {tab}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          <TabsContent value="Params">
-            <Card>
-              <CardHeader>
-                <CardTitle>Query Parameters</CardTitle>
-                <CardDescription>
-                  Add, edit, or remove query parameters for your request.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-2">
-                {queryParams.map((param, index) => (
-                  <div key={index} className="flex flex-row items-center gap-2">
-                    <Input
-                      placeholder="Key"
-                      value={param.key}
-                      onChange={(e) =>
-                        updateQueryParam(index, { key: e.target.value })
-                      }
-                    />
-                    <Input
-                      placeholder="Value"
-                      value={param.value}
-                      onChange={(e) =>
-                        updateQueryParam(index, { value: e.target.value })
-                      }
-                    />
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      onClick={() => deleteQueryParam(index)}
-                    >
-                      <Trash />
-                    </Button>
-                  </div>
-                ))}
-              </CardContent>
-              <CardFooter>
-                <CardAction className="w-full">
-                  <Button
-                    size="sm"
-                    onClick={() =>
-                      setQueryParams([...queryParams, { key: "", value: "" }])
-                    }
-                  >
-                    Add
-                  </Button>
-                </CardAction>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-          <TabsContent value="Headers">
-            <Card>
-              <CardHeader>
-                <CardTitle>Headers</CardTitle>
-                <CardDescription>
-                  Add, edit, or remove headers for your request.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-2">
-                {headers.map((header, index) => (
-                  <div key={index} className="flex flex-row items-center gap-2">
-                    <Input
-                      placeholder="Key"
-                      value={header.key}
-                      onChange={(e) =>
-                        updateHeader(index, { key: e.target.value })
-                      }
-                    />
-                    <Input
-                      placeholder="Value"
-                      value={header.value}
-                      onChange={(e) =>
-                        updateHeader(index, { value: e.target.value })
-                      }
-                    />
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      onClick={() => deleteHeader(index)}
-                    >
-                      <Trash />
-                    </Button>
-                  </div>
-                ))}
-              </CardContent>
-              <CardFooter>
-                <CardAction className="w-full">
-                  <Button
-                    size="sm"
-                    onClick={() =>
-                      setHeaders([...headers, { key: "", value: "" }])
-                    }
-                  >
-                    Add
-                  </Button>
-                </CardAction>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-          <TabsContent value="JSON">
-            <TabsContent value="JSON">
-              <Card>
-                <CardHeader className="flex flex-row justify-between">
-                  <div className="flex flex-col gap-3">
-                    <CardTitle>Request Body</CardTitle>
-                    <CardDescription>
-                      Edit JSON data for your request.
-                    </CardDescription>
-                  </div>
-                  <div className="flex flex-row gap-2">
-                    <CardAction>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="secondary"
-                            className="hover:bg-muted/90 hover:text-secondary transition-colors"
-                            size="icon-xs"
-                            aria-label="Paste request body"
-                          >
-                            <ClipboardPaste />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Paste</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </CardAction>
-                    <CardAction>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="destructive"
-                            className="hover:bg-muted/90 hover:text-destructive transition-colors"
-                            size="icon-xs"
-                            aria-label="Remove request body"
-                          >
-                            <Trash2 />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Clear</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </CardAction>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <CodeMirror
-                    value={requestBody}
-                    onChange={onRequestBodyChange}
-                    {...editorSettings}
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </TabsContent>
-        </Tabs>
+        <RequestTabs
+          queryParams={queryParams}
+          updateQueryParam={updateQueryParam}
+          deleteQueryParam={deleteQueryParam}
+          setQueryParams={setQueryParams}
+          headers={headers}
+          updateHeader={updateHeader}
+          deleteHeader={deleteHeader}
+          setHeaders={setHeaders}
+          requestBody={requestBody}
+          onRequestBodyChange={onRequestBodyChange}
+          editorConfig={editorConfig}
+        />
         {response && (
           <Tabs defaultValue={responseTabs[0]} className="w-full">
             <TabsList variant="line" className="mb-4 w-full flex items-center">
@@ -405,7 +255,7 @@ export default function Home() {
                   <CodeMirror
                     value={responseBody}
                     editable={false}
-                    {...editorSettings}
+                    {...editorConfig}
                   />
                 </CardContent>
               </Card>
