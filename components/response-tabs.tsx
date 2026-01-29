@@ -37,6 +37,13 @@ const ResponseTabs = ({
   getStatusText,
 }: ResponseTabsProps) => {
   if (!response) return <></>;
+  const getStatusColorClass = (code: number) => {
+    if (code >= 200 && code < 300) return "text-green-500";
+    if (code >= 300 && code < 400) return "text-yellow-500";
+    if (code >= 400) return "text-red-500";
+    return "text-muted-foreground";
+  };
+
   return (
     <Tabs defaultValue={responseTabs[0]} className="w-full">
       <TabsList variant="line" className="mb-4 w-full flex items-center">
@@ -48,7 +55,7 @@ const ResponseTabs = ({
           ))}
         </div>
         <div className="flex gap-4 text-xs font-semibold ml-auto">
-          <span>
+          <span className={`font-bold ${getStatusColorClass(response.status)}`}>
             {response.status} {getStatusText(response)}
           </span>
           <span>{response.customData?.time} ms</span>
