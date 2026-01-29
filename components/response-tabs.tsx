@@ -61,8 +61,10 @@ const ResponseTabs = ({
           <span>{response.customData?.time} ms</span>
           <span>
             {prettyBytes(
-              JSON.stringify(response.data).length +
-                JSON.stringify(response.headers).length,
+              new Blob([
+                JSON.stringify(response.data),
+                JSON.stringify(response.headers),
+              ]).size,
             )}
           </span>
         </div>
