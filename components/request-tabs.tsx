@@ -45,8 +45,6 @@ interface RequestTabsProps {
   onRequestBodyChange: (body: string) => void;
 }
 
-const requestTabs = ["Params", "Headers", "JSON"];
-
 const DeleteButton = ({ onClick }: { onClick: () => void }) => (
   <Button variant="destructive" size="icon" onClick={onClick}>
     <Trash />
@@ -65,6 +63,8 @@ const RequestTabs = ({
   requestBody,
   onRequestBodyChange,
 }: RequestTabsProps) => {
+  const requestTabs = ["Params", "Headers", "JSON"];
+
   return (
     <Tabs defaultValue={requestTabs[0]} className="w-full">
       <TabsList variant="line" className="mb-4">

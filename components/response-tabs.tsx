@@ -29,14 +29,14 @@ interface ResponseTabsProps {
   getStatusText: (res: AxiosResponse) => string;
 }
 
-const responseTabs = ["Body", "Headers"];
-
 const ResponseTabs = ({
   response,
   responseBody,
   getStatusText,
 }: ResponseTabsProps) => {
   if (!response) return <></>;
+
+  const responseTabs = ["Body", "Headers"];
   const getStatusColorClass = (code: number) => {
     if (code >= 200 && code < 300) return "text-green-500";
     if (code >= 300 && code < 400) return "text-yellow-500";
