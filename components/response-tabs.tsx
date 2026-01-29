@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-import JSONEditor from "@/components/JSONEditor";
+import JSONEditor from "@/components/json-editor";
 import { Copy } from "lucide-react";
 
 interface ResponseTabsProps {

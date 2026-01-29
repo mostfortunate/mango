@@ -5,9 +5,9 @@ import { status, type HttpStatus } from "http-status";
 import axios, { type AxiosResponse } from "axios";
 
 import { HTTPMethod } from "@/app/types/http";
-import RequestForm from "@/components/RequestForm";
-import RequestTabs from "@/components/RequestTabs";
-import ResponseTabs from "@/components/ResponseTabs";
+import RequestForm from "@/components/request-form";
+import RequestTabs from "@/components/request-tabs";
+import ResponseTabs from "@/components/response-tabs";
 
 type QueryParam = {
   key: string;
