@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Fira_Code } from "next/font/google";
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/mode-toggle";
-import { Footer } from "@/components/footer";
+import Footer from "@/components/footer";
 import "./globals.css";
 
 const firaCode = Fira_Code({
@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${firaCode.className} antialiased min-h-screen flex flex-col`}
+        className={`${firaCode.className} flex min-h-screen flex-col antialiased`}
       >
         <ThemeProvider
           attribute="class"
@@ -35,7 +35,7 @@ export default function RootLayout({
         >
           <div className="flex-1">{children}</div>
           <Footer />
-          <div className="fixed bottom-0 right-0 p-4">
+          <div className="fixed right-0 bottom-0 p-4">
             <ModeToggle />
           </div>
           <Toaster richColors />
