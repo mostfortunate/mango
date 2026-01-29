@@ -4,7 +4,8 @@ import { useState, useCallback, useEffect } from "react";
 import { status, type HttpStatus } from "http-status";
 import axios, { type AxiosResponse } from "axios";
 
-import { HTTPMethod } from "@/app/types/http";
+import { type HTTPMethod } from "@/app/types/http";
+
 import RequestForm from "@/components/request-form";
 import RequestTabs from "@/components/request-tabs";
 import ResponseTabs from "@/components/response-tabs";
