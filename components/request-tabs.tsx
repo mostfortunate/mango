@@ -47,6 +47,12 @@ interface RequestTabsProps {
 
 const requestTabs = ["Params", "Headers", "JSON"];
 
+const DeleteButton = ({ onClick }: { onClick: () => void }) => (
+  <Button variant="destructive" size="icon" onClick={onClick}>
+    <Trash />
+  </Button>
+);
+
 const RequestTabs = ({
   queryParams,
   updateQueryParam,
@@ -93,13 +99,7 @@ const RequestTabs = ({
                     updateQueryParam(index, { value: e.target.value })
                   }
                 />
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => deleteQueryParam(index)}
-                >
-                  <Trash />
-                </Button>
+                <DeleteButton onClick={() => deleteQueryParam(index)} />
               </div>
             ))}
           </CardContent>
@@ -140,13 +140,7 @@ const RequestTabs = ({
                     updateHeader(index, { value: e.target.value })
                   }
                 />
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => deleteHeader(index)}
-                >
-                  <Trash />
-                </Button>
+                <DeleteButton onClick={() => deleteHeader(index)} />
               </div>
             ))}
           </CardContent>
