@@ -183,8 +183,8 @@ export default function Home() {
       }),
       {
         loading: "Sending...",
-        success: (response: AxiosResponse) => {
-          return `Success: ${response.status} ${getStatusText(response)}`;
+        success: (_: AxiosResponse) => {
+          return "Success!";
         },
         error: (error: any) => {
           if (error?.response) {
