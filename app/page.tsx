@@ -6,6 +6,7 @@ import axios, { type AxiosResponse } from "axios";
 
 import { type HTTPMethod } from "@/app/types/http";
 
+import { toast, type ExternalToast } from "sonner";
 import RequestForm from "@/components/request-form";
 import RequestTabs from "@/components/request-tabs";
 import ResponseTabs from "@/components/response-tabs";
@@ -97,18 +98,106 @@ export default function Home() {
   }, []);
 
   const sendRequest = async () => {
-    if (!url) return;
-    axios({
+    const TOAST_PROPS: ExternalToast = {
+      position: "top-center",
+      duration: 1200,
+      closeButton: true,
+    };
+
+    setResponse(null);
+    setResponseBody("");
+
+    if (!url) {
+      toast.warning("Please enter a URL.", {
+        ...TOAST_PROPS,
+        duration: Infinity,
+      });
+      return;
+    }
+
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(url);
+      if (!/^https?:$/.test(parsedUrl.protocol)) {
+        throw new Error("Only HTTP and HTTPS protocols are supported.");
+      }
+    } catch (e: any) {
+      toast.error("Please enter a valid URL.", {
+        ...TOAST_PROPS,
+        duration: Infinity,
+      });
+      return;
+    }
+
+    let parsedBody: any = undefined;
+    if (requestBody) {
+      try {
+        parsedBody = JSON.parse(requestBody);
+      } catch (e: any) {
+        toast.error("Request body must be valid JSON.", {
+          ...TOAST_PROPS,
+          duration: Infinity,
+        });
+        return;
+      }
+    }
+
+    const axiosPromise = axios({
       url: url,
       method: method.toLowerCase(),
       params: keyValueArrayToObject(queryParams),
       headers: keyValueArrayToObject(headers),
-      data: requestBody ? JSON.parse(requestBody) : undefined,
-    }).then((response: AxiosResponse) => {
-      console.log(response);
-      setResponseBody(JSON.stringify(response.data, null, 2));
-      setResponse(response);
+      data: parsedBody,
+      validateStatus: () => true, // always resolve, so we can handle 4xx/5xx in .then
     });
+
+    toast.promise(
+      axiosPromise.then((response: AxiosResponse) => {
+        // 2xx: treat as success
+        if (response.status >= 200 && response.status < 300) {
+          setResponseBody(JSON.stringify(response.data, null, 2));
+          setResponse(response);
+          return response;
+        } else {
+          // 4xx/5xx: treat as error, but still show response tab
+
+          let bodyString = "";
+          if (response.data === undefined || response.data === null) {
+            bodyString = "";
+          } else if (typeof response.data === "string") {
+            bodyString = response.data;
+          } else {
+            bodyString = JSON.stringify(response.data, null, 2);
+          }
+
+          setResponseBody(bodyString);
+          setResponse(response);
+
+          // throw to trigger error toast, pass response for error message
+          const error: any = new Error(
+            `HTTP Error: ${response.status} ${getStatusText(response)}`,
+          );
+          error.response = response;
+          throw error;
+        }
+      }),
+      {
+        loading: "Sending...",
+        success: (response: AxiosResponse) => {
+          return `Success: ${response.status} ${getStatusText(response)}`;
+        },
+        error: (error: any) => {
+          if (error?.response) {
+            return `HTTP Error: ${error.response.status} ${getStatusText(error.response)}`;
+          }
+          return error?.message
+            ? `Error: ${error.message}`
+            : "Network or unknown error occurred.";
+        },
+        ...TOAST_PROPS,
+        duration: Infinity,
+      },
+    );
   };
 
   useEffect(() => {
