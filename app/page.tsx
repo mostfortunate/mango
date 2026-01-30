@@ -21,8 +21,8 @@ type Header = {
   value: string;
 };
 
-export type NumericKeys<T> = Extract<keyof T, number>;
-export type HttpStatusCode = NumericKeys<HttpStatus>;
+type NumericKeys<T> = Extract<keyof T, number>;
+type HttpStatusCode = NumericKeys<HttpStatus>;
 
 export default function Home() {
   const [url, setUrl] = useState<string>("");
