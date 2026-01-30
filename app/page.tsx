@@ -4,6 +4,13 @@ import { useState, useCallback, useEffect } from "react";
 import { status, type HttpStatus } from "http-status";
 import axios, { type AxiosResponse } from "axios";
 
+import {
+  updateAt,
+  deleteAt,
+  hasEmptyKeys,
+  keyValueArrayToObject,
+} from "@/lib/utils";
+
 import { type HTTPMethod } from "@/app/types/http";
 
 import { toast, type ExternalToast } from "sonner";
@@ -35,29 +42,6 @@ export default function Home() {
   const methods: HTTPMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 
   // MARK: Helpers
-  function updateAt<T>(arr: T[], index: number, updates: Partial<T>): T[] {
-    return arr.map((item, i) => (i === index ? { ...item, ...updates } : item));
-  }
-
-  function deleteAt<T>(arr: T[], index: number): T[] {
-    return arr.filter((_, i) => i !== index);
-  }
-
-  function hasEmptyKeys(arr: { key: string; value: string }[]): boolean {
-    return arr.some(({ key }) => !key.trim());
-  }
-
-  function keyValueArrayToObject(
-    arr: { key: string; value: string }[],
-  ): Record<string, string> {
-    const obj: Record<string, string> = {};
-    arr.forEach(({ key, value }) => {
-      if (key) {
-        obj[key] = value;
-      }
-    });
-    return obj;
-  }
 
   function updateEndTime(response: AxiosResponse): AxiosResponse {
     response.customData = response.customData || {};
