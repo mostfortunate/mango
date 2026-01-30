@@ -209,7 +209,10 @@ export default function Home() {
     const responseInterceptor = axios.interceptors.response.use(
       updateEndTime,
       (e) => {
-        return Promise.reject(updateEndTime(e.response));
+        if (e && e.response) {
+          return Promise.reject(updateEndTime(e.response));
+        }
+        return Promise.reject(e);
       },
     );
 
