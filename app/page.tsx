@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { status, type HttpStatus } from "http-status";
 import axios, { type AxiosResponse } from "axios";
-import debounce from "lodash/debounce";
 
 import { type HTTPMethod } from "@/app/types/http";
 
@@ -98,7 +97,7 @@ export default function Home() {
     setRequestBody(body);
   }, []);
 
-  const sendRequest = useCallback(async () => {
+  const sendRequest = async () => {
     const TOAST_PROPS: ExternalToast = {
       position: "top-center",
       duration: 1200,
@@ -198,12 +197,7 @@ export default function Home() {
         duration: Infinity,
       },
     );
-  }, [url, method, queryParams, headers, requestBody]);
-
-  const debouncedSendRequest = useMemo(
-    () => debounce(sendRequest, 300, { leading: true }),
-    [sendRequest],
-  );
+  };
 
   useEffect(() => {
     const requestInterceptor = axios.interceptors.request.use((request) => {
@@ -234,7 +228,7 @@ export default function Home() {
           method={method}
           setMethod={setMethod}
           methods={methods}
-          onSend={debouncedSendRequest}
+          onSend={sendRequest}
         />
         <RequestTabs
           method={method}
