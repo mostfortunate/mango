@@ -38,7 +38,7 @@ export default function RootLayout({
           <div className="fixed right-0 bottom-0 p-4">
             <ModeToggle />
           </div>
-          <Toaster richColors />
+          <Toaster visibleToasts={3} richColors />
         </ThemeProvider>
       </body>
     </html>
