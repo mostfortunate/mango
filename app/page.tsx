@@ -32,6 +32,13 @@ type Header = {
 type NumericKeys<T> = Extract<keyof T, number>;
 type HttpStatusCode = NumericKeys<HttpStatus>;
 
+const methods: HTTPMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+const TOAST_PROPS: ExternalToast = {
+  position: "top-center",
+  duration: 1200,
+  closeButton: true,
+};
+
 export default function Home() {
   const [url, setUrl] = useState<string>("");
   const [method, setMethod] = useState<HTTPMethod>("GET");
@@ -40,7 +47,6 @@ export default function Home() {
   const [responseBody, setResponseBody] = useState<string>("");
   const [headers, setHeaders] = useState<Header[]>([]);
   const [response, setResponse] = useState<AxiosResponse | null>(null);
-  const methods: HTTPMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 
   // MARK: Helpers
 
@@ -87,12 +93,6 @@ export default function Home() {
   }, []);
 
   const sendRequest = async () => {
-    const TOAST_PROPS: ExternalToast = {
-      position: "top-center",
-      duration: 1200,
-      closeButton: true,
-    };
-
     setResponse(null);
     setResponseBody("");
 
