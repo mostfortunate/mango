@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { status, type HttpStatus } from "http-status";
 import axios, { type AxiosResponse } from "axios";
 
 import {
@@ -10,6 +9,7 @@ import {
   hasEmptyKeys,
   keyValueArrayToObject,
   stringifyResponseBody,
+  getStatusText,
 } from "@/lib/utils";
 
 import { type HTTPMethod } from "@/app/types/http";
@@ -29,9 +29,6 @@ type Header = {
   value: string;
 };
 
-type NumericKeys<T> = Extract<keyof T, number>;
-type HttpStatusCode = NumericKeys<HttpStatus>;
-
 const methods: HTTPMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 const TOAST_PROPS: ExternalToast = {
   position: "top-center",
@@ -48,27 +45,11 @@ export default function Home() {
   const [headers, setHeaders] = useState<Header[]>([]);
   const [response, setResponse] = useState<AxiosResponse | null>(null);
 
-  // MARK: Helpers
-
   function updateEndTime(response: AxiosResponse): AxiosResponse {
     response.customData = response.customData || {};
     response.customData.time =
       new Date().getTime() - response.config.customData.startTime;
     return response;
-  }
-
-  function isHttpStatusCode(code: number): code is HttpStatusCode {
-    return code in status;
-  }
-
-  function getStatusText(res: AxiosResponse): string {
-    if (res.statusText) return res.statusText;
-
-    if (isHttpStatusCode(res.status)) {
-      return status[res.status];
-    }
-
-    return "Unknown Status";
   }
 
   // MARK: Handlers

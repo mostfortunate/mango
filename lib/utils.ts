@@ -1,5 +1,10 @@
+import { status, type HttpStatus } from "http-status";
+import { type AxiosResponse } from "axios";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+
+type NumericKeys<T> = Extract<keyof T, number>;
+type HttpStatusCode = NumericKeys<HttpStatus>;
 
 export function updateAt<T>(arr: T[], index: number, updates: Partial<T>): T[] {
   return arr.map((item, i) => (i === index ? { ...item, ...updates } : item));
@@ -25,10 +30,24 @@ export function keyValueArrayToObject(
   return obj;
 }
 
-export function stringifyResponseBody(data: string | number | boolean | object | null | undefined): string {
+export function stringifyResponseBody(
+  data: string | number | boolean | object | null | undefined,
+): string {
   if (data === undefined || data === null) return "";
   if (typeof data === "string") return data;
   return JSON.stringify(data, null, 2);
+}
+
+export function isHttpStatusCode(code: number): code is HttpStatusCode {
+  return code in status;
+}
+
+export function getStatusText(res: AxiosResponse): string {
+  if (res.statusText) return res.statusText;
+  if (isHttpStatusCode(res.status)) {
+    return status[res.status];
+  }
+  return "Unknown Status";
 }
 
 export function cn(...inputs: ClassValue[]) {
