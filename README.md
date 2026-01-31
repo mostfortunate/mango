@@ -10,7 +10,7 @@ Via is a free, lightweight, easy-to-use HTTP client. It provides a modern, intui
 - Edit query parameters, headers, and JSON request bodies
 - Display response metadata (status, time, size)
 - Syntax-highlighted JSON editor for request body
-- Light and dark theme supporty
+- Light and dark theme support
 
 ---
 
