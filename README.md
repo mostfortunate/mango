@@ -1,4 +1,14 @@
-![Via Dark Banner](public/via.png)
+<p align="center">
+   <img width="1000" src="public/via.png">
+</p>
+
+<p align="center">
+   <img src="https://img.shields.io/github/license/mostfortunate/via?style=for-the-badge">
+   <img src="https://img.shields.io/badge/price-free-5E17EB?style=for-the-badge">
+   <img src="https://img.shields.io/github/issues/mostfortunate/via?style=for-the-badge">
+   <!-- <img src="https://img.shields.io/github/v/release/mostfortunate/via"> WE SHALL ADD THIS EVENTUALLY -->
+</p>
+
 
 Via is a free, lightweight, easy-to-use HTTP client. It provides a modern, intuitive interface for building, sending, and inspecting HTTP requests. Via is designed for developers seeking a fast, open-source alternative to tools like Postman or Insomnia.
 
