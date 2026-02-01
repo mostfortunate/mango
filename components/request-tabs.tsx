@@ -1,3 +1,7 @@
+"use client";
+
+import { useTheme } from "next-themes";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -19,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import JSONEditor from "@/components/json-editor";
 import { ClipboardPaste, Trash2, Trash } from "lucide-react";
+import { IconAlertTriangle } from "@tabler/icons-react";
 
 import { HTTPMethod } from "@/app/types/http";
 
@@ -46,7 +51,25 @@ interface RequestTabsProps {
   onRequestBodyChange: (body: string) => void;
 }
 
-const DeleteButton = ({ onClick }: { onClick: () => void }) => (
+interface AlertMessageProps {
+  text: string;
+}
+
+interface DeleteButtonProps {
+  onClick: () => void;
+}
+
+const AlertMessage = ({ text }: AlertMessageProps) => {
+  const { theme } = useTheme();
+  return (
+    <div className="text-muted-foreground flex flex-row items-center gap-2 rounded-sm border-2 border-yellow-300/70 bg-amber-400/10 p-4">
+      <IconAlertTriangle color={theme === "dark" ? "#cc9602" : "#fcba03"} />
+      {text}
+    </div>
+  );
+};
+
+const DeleteButton = ({ onClick }: DeleteButtonProps) => (
   <Button variant="destructive" size="icon" onClick={onClick}>
     <Trash />
   </Button>
@@ -65,10 +88,8 @@ const RequestTabs = ({
   requestBody,
   onRequestBodyChange,
 }: RequestTabsProps) => {
-  const showJSONTab = method !== "GET";
-  const requestTabs = showJSONTab
-    ? ["Params", "Headers", "JSON"]
-    : ["Params", "Headers"];
+  const ignoreJSON = method == "GET";
+  const requestTabs = ["Params", "Headers", "JSON"];
 
   return (
     <Tabs defaultValue={requestTabs[0]} className="w-full">
@@ -161,57 +182,60 @@ const RequestTabs = ({
           </CardFooter>
         </Card>
       </TabsContent>
-      {showJSONTab && (
-        <TabsContent value="JSON">
-          <Card>
-            <CardHeader className="flex flex-row justify-between">
-              <div className="flex flex-col gap-3">
-                <CardTitle>Request Body</CardTitle>
-                <CardDescription>
-                  Edit JSON data for your request.
-                </CardDescription>
-              </div>
-              <div className="flex flex-row gap-2">
-                <CardAction>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="secondary"
-                        size="icon-xs"
-                        aria-label="Paste request body"
-                      >
-                        <ClipboardPaste />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Paste</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </CardAction>
-                <CardAction>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="destructive"
-                        size="icon-xs"
-                        aria-label="Remove request body"
-                      >
-                        <Trash2 />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Clear</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </CardAction>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <JSONEditor value={requestBody} onChange={onRequestBodyChange} />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      )}
+
+      <TabsContent value="JSON">
+        <Card>
+          <CardHeader className="flex flex-row justify-between">
+            <div className="flex flex-col gap-3">
+              <CardTitle>Request Body</CardTitle>
+              <CardDescription>
+                {ignoreJSON ? (
+                  <AlertMessage text="Request body will not be sent for GET requests." />
+                ) : (
+                  "Edit the JSON request body."
+                )}
+              </CardDescription>
+            </div>
+            <div className="flex flex-row gap-2">
+              <CardAction>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="secondary"
+                      size="icon-xs"
+                      aria-label="Paste request body"
+                    >
+                      <ClipboardPaste />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Paste</p>
+                  </TooltipContent>
+                </Tooltip>
+              </CardAction>
+              <CardAction>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="destructive"
+                      size="icon-xs"
+                      aria-label="Remove request body"
+                    >
+                      <Trash2 />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Clear</p>
+                  </TooltipContent>
+                </Tooltip>
+              </CardAction>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <JSONEditor value={requestBody} onChange={onRequestBodyChange} />
+          </CardContent>
+        </Card>
+      </TabsContent>
     </Tabs>
   );
 };
