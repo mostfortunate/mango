@@ -62,7 +62,7 @@ interface DeleteButtonProps {
 const AlertMessage = ({ text }: AlertMessageProps) => {
   const { theme } = useTheme();
   return (
-    <div className="text-muted-foreground flex flex-row items-center gap-2 rounded-sm border-2 border-yellow-300/70 bg-amber-400/10 p-4">
+    <div className="text-muted-foreground font-semibold flex flex-row items-center gap-2 rounded-sm border-2 border-yellow-300/70 bg-amber-400/10 p-2">
       <IconAlertTriangle color={theme === "dark" ? "#cc9602" : "#fcba03"} />
       {text}
     </div>
