@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { motion } from "framer-motion";
 import { useHttpRequest } from "@/hooks/useHttpRequest";
 import { type AxiosResponse } from "axios";
 
@@ -103,11 +104,17 @@ export default function Home() {
           onRequestBodyChange={onRequestBodyChange}
         />
         {response && (
-          <ResponseTabs
-            response={response}
-            responseBody={responseBody}
-            getStatusText={getStatusText}
-          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <ResponseTabs
+              response={response}
+              responseBody={responseBody}
+              getStatusText={getStatusText}
+            />
+          </motion.div>
         )}
       </div>
     </>
