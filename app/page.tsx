@@ -23,7 +23,6 @@ type Header = {
   value: string;
 };
 
-const methods: HTTPMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 const TOAST_PROPS: ExternalToast = {
   position: "top-center",
   duration: 2500,
@@ -87,7 +86,6 @@ export default function Home() {
           setUrl={setUrl}
           method={method}
           setMethod={setMethod}
-          methods={methods}
           onSend={sendRequest}
         />
         <RequestTabs
