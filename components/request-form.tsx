@@ -3,15 +3,18 @@
 import { useTheme } from "next-themes";
 
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { HTTPMethod } from "@/app/types/http";
 
 interface RequestFormProps {
@@ -46,37 +49,44 @@ const RequestForm = ({
   const theme = (resolvedTheme ?? "light") as "light" | "dark";
 
   return (
-    <div className="flex flex-row gap-4">
-      <Select value={method} onValueChange={setMethod}>
-        <SelectTrigger
-          className={`w-full max-w-48 font-mono ${HTTP_METHODS[method][theme]}`}
-        >
-          <SelectValue placeholder={method} />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            {Object.entries(HTTP_METHODS).map(([name, color]) => (
-              <SelectItem
-                key={name}
-                value={name}
-                className={`font-mono ${color[theme]}`}
-              >
-                {name}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-      <Input
+    <InputGroup>
+      <InputGroupInput
+        id="inline-start-input"
         type="url"
         placeholder="https://example.com"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
       />
-      <Button className="font-semibold" type="submit" onClick={onSend}>
-        Send
-      </Button>
-    </div>
+      <InputGroupAddon align="inline-start">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <InputGroupButton
+              className={`font-mono ${HTTP_METHODS[method][theme]}`}
+              variant="outline"
+            >
+              {method}
+            </InputGroupButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-32">
+            {Object.entries(HTTP_METHODS).map(([name, color]) => (
+              <DropdownMenuCheckboxItem
+                key={name}
+                checked={method === name}
+                onCheckedChange={() => setMethod(name as HTTPMethod)}
+                className={`font-mono ${color[theme]}`}
+              >
+                {name}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </InputGroupAddon>
+      <InputGroupAddon align="inline-end">
+        <InputGroupButton variant="default" className="text-primary-foreground font-semibold" onClick={onSend}>
+          Send
+        </InputGroupButton>
+      </InputGroupAddon>
+    </InputGroup>
   );
 };
 
