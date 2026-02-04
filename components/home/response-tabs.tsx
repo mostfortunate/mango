@@ -50,7 +50,7 @@ const ResponseTabs = ({
             </TabsTrigger>
           ))}
         </div>
-        <div className="ml-auto flex gap-4 text-xs font-semibold">
+        <div className="ml-auto flex gap-4 text-xs font-semibold font-mono">
           <span className={`font-bold ${getStatusColorClass(response.status)}`}>
             {response.status} {getStatusText(response)}
           </span>
