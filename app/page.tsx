@@ -3,25 +3,16 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useHttpRequest } from "@/hooks/useHttpRequest";
-import { type AxiosResponse } from "axios";
-
 import { updateAt, deleteAt, getStatusText } from "@/lib/utils";
-import { type HTTPMethod } from "@/app/types/http";
 
+import { type AxiosResponse } from "axios";
 import { type ExternalToast } from "sonner";
+import { type HTTPMethod } from "@/app/types/http";
+import { type QueryParam, type Header } from "@/app/types/models";
+
 import RequestForm from "@/components/home/request-form";
 import RequestTabs from "@/components/home/request-tabs";
 import ResponseTabs from "@/components/home/response-tabs";
-
-type QueryParam = {
-  key: string;
-  value: string;
-};
-
-type Header = {
-  key: string;
-  value: string;
-};
 
 const TOAST_PROPS: ExternalToast = {
   position: "bottom-right",
