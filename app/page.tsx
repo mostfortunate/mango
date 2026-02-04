@@ -9,7 +9,6 @@ import { updateAt, deleteAt, getStatusText } from "@/lib/utils";
 import { MOCK_HISTORY } from "@/mocks/request-history";
 
 import { type AxiosResponse } from "axios";
-import { type ExternalToast } from "sonner";
 import { type HTTPMethod } from "@/app/types/http";
 import { type QueryParam, type Header } from "@/app/types/models";
 
@@ -18,11 +17,6 @@ import RequestTabs from "@/components/home/request-tabs";
 import ResponseTabs from "@/components/home/response-tabs";
 
 const USE_MOCK_DATA = false;
-const TOAST_PROPS: ExternalToast = {
-  position: "bottom-right",
-  duration: 2500,
-  closeButton: true,
-};
 
 export default function Home() {
   const [url, setUrl] = useState<string>("");
@@ -66,7 +60,6 @@ export default function Home() {
   );
 
   const { sendRequest } = useHttpRequest({
-    TOAST_PROPS,
     url,
     method,
     queryParams,

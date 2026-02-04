@@ -10,18 +10,11 @@ import {
   hasEmptyKeys,
 } from "@/lib/utils";
 
-export interface UseHttpRequestParams {
-  url: string;
-  method: string;
-  queryParams: { key: string; value: string }[];
-  headers: { key: string; value: string }[];
-  requestBody: string;
-  setResponse: (res: AxiosResponse | null) => void;
-  setResponseBody: (body: string) => void;
-  addFromResponse: (params: HistoryItem) => void;
-  TOAST_PROPS: ExternalToast;
-  updateEndTime: (response: AxiosResponse) => AxiosResponse;
-}
+const TOAST_PROPS: ExternalToast = {
+  position: "bottom-right",
+  duration: 2500,
+  closeButton: true,
+};
 
 // type guard for AxiosError with response
 function isAxiosErrorWithResponse(
@@ -45,6 +38,156 @@ function isErrorWithMessage(error: unknown): error is { message: string } {
   );
 }
 
+type ValidationResult<T = undefined> =
+  | { ok: true; value?: T }
+  | { ok: false; error: string };
+
+function validateUrl(url: string): ValidationResult<URL> {
+  if (!url) {
+    return { ok: false, error: "Please enter a URL." };
+  }
+
+  try {
+    const parsedUrl = new URL(url);
+    if (!/^https?:$/.test(parsedUrl.protocol)) {
+      return {
+        ok: false,
+        error: "Only HTTP and HTTPS protocols are supported.",
+      };
+    }
+    return { ok: true, value: parsedUrl };
+  } catch {
+    return { ok: false, error: "Please enter a valid URL." };
+  }
+}
+
+function validateKeyValueInputs(
+  headers: { key: string; value: string }[],
+  queryParams: { key: string; value: string }[],
+): ValidationResult {
+  if (hasEmptyKeys(headers) && hasEmptyKeys(queryParams)) {
+    return {
+      ok: false,
+      error: "Query parameters and headers must have non-empty keys.",
+    };
+  }
+
+  if (hasEmptyKeys(headers)) {
+    return { ok: false, error: "Headers must have non-empty keys." };
+  }
+
+  if (hasEmptyKeys(queryParams)) {
+    return {
+      ok: false,
+      error: "Query parameters must have non-empty keys.",
+    };
+  }
+
+  return { ok: true };
+}
+
+function parseJsonBody(requestBody: string): ValidationResult<unknown> {
+  if (!requestBody) {
+    return { ok: true, value: undefined };
+  }
+
+  try {
+    return { ok: true, value: JSON.parse(requestBody) };
+  } catch {
+    return { ok: false, error: "Request body must be valid JSON." };
+  }
+}
+
+function buildAxiosConfig(params: {
+  url: string;
+  method: string;
+  queryParams: { key: string; value: string }[];
+  headers: { key: string; value: string }[];
+  data: unknown;
+}) {
+  return {
+    url: params.url,
+    method: params.method.toLowerCase(),
+    params: keyValueArrayToObject(params.queryParams),
+    headers: keyValueArrayToObject(params.headers),
+    data: params.data,
+    validateStatus: () => true,
+  };
+}
+
+function isSuccessStatus(status: number) {
+  return status >= 200 && status < 300;
+}
+
+function buildHistoryItem(params: {
+  method: string;
+  url: string;
+  response: AxiosResponse;
+}): HistoryItem {
+  return {
+    method: params.method,
+    url: params.url,
+    status: params.response.status,
+    statusText: getStatusText(params.response),
+    time: params.response.customData?.time || 0,
+  };
+}
+
+function formatErrorMessage(error: unknown) {
+  if (isAxiosErrorWithResponse(error)) {
+    return `HTTP Error: ${error.response.status} ${getStatusText(error.response)}`;
+  }
+  if (isErrorWithMessage(error)) {
+    return `Error: ${error.message}`;
+  }
+  return "Network or unknown error occurred.";
+}
+
+function registerAxiosInterceptors(
+  updateEndTime: (response: AxiosResponse) => AxiosResponse,
+) {
+  const requestInterceptor = axios.interceptors.request.use((request) => {
+    request.customData = request.customData || {};
+    request.customData.startTime = new Date().getTime();
+    return request;
+  });
+
+  const responseInterceptor = axios.interceptors.response.use(
+    updateEndTime,
+    (e) => {
+      if (e && e.response) {
+        return Promise.reject(updateEndTime(e.response));
+      }
+      return Promise.reject(e);
+    },
+  );
+
+  return () => {
+    axios.interceptors.request.eject(requestInterceptor);
+    axios.interceptors.response.eject(responseInterceptor);
+  };
+}
+
+function showWarning(message: string, toastProps: ExternalToast) {
+  toast.warning(message, { ...toastProps });
+}
+
+function showError(message: string, toastProps: ExternalToast) {
+  toast.error(message, { ...toastProps });
+}
+
+export interface UseHttpRequestParams {
+  url: string;
+  method: string;
+  queryParams: { key: string; value: string }[];
+  headers: { key: string; value: string }[];
+  requestBody: string;
+  setResponse: (res: AxiosResponse | null) => void;
+  setResponseBody: (body: string) => void;
+  addFromResponse: (params: HistoryItem) => void;
+  updateEndTime: (response: AxiosResponse) => AxiosResponse;
+}
+
 export function useHttpRequest({
   url,
   method,
@@ -54,151 +197,75 @@ export function useHttpRequest({
   setResponse,
   setResponseBody,
   addFromResponse,
-  TOAST_PROPS,
   updateEndTime,
 }: UseHttpRequestParams) {
   useEffect(() => {
-    const requestInterceptor = axios.interceptors.request.use((request) => {
-      request.customData = request.customData || {};
-      request.customData.startTime = new Date().getTime();
-      return request;
-    });
-
-    const responseInterceptor = axios.interceptors.response.use(
-      updateEndTime,
-      (e) => {
-        if (e && e.response) {
-          return Promise.reject(updateEndTime(e.response));
-        }
-        return Promise.reject(e);
-      },
-    );
-
-    return () => {
-      axios.interceptors.request.eject(requestInterceptor);
-      axios.interceptors.response.eject(responseInterceptor);
-    };
+    return registerAxiosInterceptors(updateEndTime);
   }, [updateEndTime]);
 
   const sendRequest = useCallback(async () => {
     setResponse(null);
     setResponseBody("");
 
-    if (!url) {
-      toast.warning("Please enter a URL.", {
-        ...TOAST_PROPS,
-      });
+    const urlValidation = validateUrl(url);
+    if (!urlValidation.ok) {
+      showWarning(urlValidation.error, TOAST_PROPS);
       return;
     }
 
-    if (hasEmptyKeys(headers) && hasEmptyKeys(queryParams)) {
-      toast.warning("Query parameters and headers must have non-empty keys.", {
-        ...TOAST_PROPS,
-      });
-      return;
-    } else if (hasEmptyKeys(headers)) {
-      toast.warning("Headers must have non-empty keys.", {
-        ...TOAST_PROPS,
-      });
-      return;
-    } else if (hasEmptyKeys(queryParams)) {
-      toast.warning("Query parameters must have non-empty keys.", {
-        ...TOAST_PROPS,
-      });
+    const inputValidation = validateKeyValueInputs(headers, queryParams);
+    if (!inputValidation.ok) {
+      showWarning(inputValidation.error, TOAST_PROPS);
       return;
     }
 
-    let parsedUrl: URL;
-    try {
-      parsedUrl = new URL(url);
-      if (!/^https?:$/.test(parsedUrl.protocol)) {
-        throw new Error("Only HTTP and HTTPS protocols are supported.");
-      }
-    } catch {
-      toast.error("Please enter a valid URL.", {
-        ...TOAST_PROPS,
-      });
+    const bodyValidation = parseJsonBody(requestBody);
+    if (!bodyValidation.ok) {
+      showError(bodyValidation.error, TOAST_PROPS);
       return;
     }
 
-    let parsedBody: unknown = undefined;
-    if (requestBody) {
-      try {
-        parsedBody = JSON.parse(requestBody);
-      } catch {
-        toast.error("Request body must be valid JSON.", {
-          ...TOAST_PROPS,
-        });
-        return;
-      }
-    }
-
-    const axiosPromise = axios({
-      url: url,
-      method: method.toLowerCase(),
-      params: keyValueArrayToObject(queryParams),
-      headers: keyValueArrayToObject(headers),
-      data: parsedBody,
-      validateStatus: () => true, // always resolve, so we can handle 4xx/5xx in .then
-    });
+    const axiosPromise = axios(
+      buildAxiosConfig({
+        url,
+        method,
+        queryParams,
+        headers,
+        data: bodyValidation.value,
+      }),
+    );
 
     toast.promise(
       axiosPromise.then((response: AxiosResponse) => {
-        // 2xx: treat as success
-        if (response.status >= 200 && response.status < 300) {
-          setResponseBody(stringifyResponseBody(response.data));
-          setResponse(response);
-          addFromResponse({
-            method,
-            url,
-            status: response.status,
-            statusText: getStatusText(response),
-            time: response.customData?.time || 0,
-          });
+        const bodyString = stringifyResponseBody(response.data);
+        setResponseBody(bodyString);
+        setResponse(response);
+        addFromResponse(buildHistoryItem({ method, url, response }));
+
+        if (isSuccessStatus(response.status)) {
           return response;
-        } else {
-          // 4xx/5xx: treat as error, but still show response tab
-          const bodyString = stringifyResponseBody(response.data);
-          setResponseBody(bodyString);
-          setResponse(response);
-          addFromResponse({
-            method,
-            url,
-            status: response.status,
-            statusText: getStatusText(response),
-            time: response.customData?.time || 0,
-          });
-
-          // throw to trigger error toast, pass response for error message
-          const error = new Error(
-            `HTTP Error: ${response.status} ${getStatusText(response)}`,
-          ) as Error & {
-            response?: AxiosResponse;
-            status?: number;
-            statusText?: string;
-          };
-
-          error.response = response;
-          error.status = response.status;
-          error.statusText = getStatusText(response);
-
-          throw error;
         }
+
+        const error = new Error(
+          `HTTP Error: ${response.status} ${getStatusText(response)}`,
+        ) as Error & {
+          response?: AxiosResponse;
+          status?: number;
+          statusText?: string;
+        };
+
+        error.response = response;
+        error.status = response.status;
+        error.statusText = getStatusText(response);
+
+        throw error;
       }),
       {
         loading: "Sending...",
         success: () => {
           return "Success!";
         },
-        error: (error: unknown) => {
-          if (isAxiosErrorWithResponse(error)) {
-            return `HTTP Error: ${error.response.status} ${getStatusText(error.response)}`;
-          }
-          if (isErrorWithMessage(error)) {
-            return `Error: ${error.message}`;
-          }
-          return "Network or unknown error occurred.";
-        },
+        error: formatErrorMessage,
         ...TOAST_PROPS,
       },
     );
@@ -211,7 +278,6 @@ export function useHttpRequest({
     setResponse,
     setResponseBody,
     addFromResponse,
-    TOAST_PROPS,
   ]);
 
   return { sendRequest };
