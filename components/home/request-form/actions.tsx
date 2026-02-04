@@ -27,7 +27,7 @@ export const Actions = ({
       </InputGroupButton>
       <InputGroupButton
         variant="default"
-        className="text-primary-foreground px-4 font-semibold"
+        className="px-2 font-semibold"
         onClick={onSend}
       >
         Send
