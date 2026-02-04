@@ -9,9 +9,9 @@ import { updateAt, deleteAt, getStatusText } from "@/lib/utils";
 import { type HTTPMethod } from "@/app/types/http";
 
 import { type ExternalToast } from "sonner";
-import RequestForm from "@/components/request-form";
-import RequestTabs from "@/components/request-tabs";
-import ResponseTabs from "@/components/response-tabs";
+import RequestForm from "@/components/home/request-form";
+import RequestTabs from "@/components/home/request-tabs";
+import ResponseTabs from "@/components/home/response-tabs";
 
 type QueryParam = {
   key: string;
