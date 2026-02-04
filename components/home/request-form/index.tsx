@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { MOCK_HISTORY } from "@/mocks/request-history";
 
 import { type HTTPMethod } from "@/app/types/http";
 import { type HistoryItem } from "@/app/types/models";
@@ -16,6 +15,7 @@ import { AddressBar } from "@/components/home/request-form/address-bar";
 interface RequestFormProps {
   url: string;
   method: HTTPMethod;
+  requestHistory: HistoryItem[];
   setUrl: (url: string) => void;
   setMethod: (method: HTTPMethod) => void;
   onSend: () => void;
@@ -23,8 +23,9 @@ interface RequestFormProps {
 
 const RequestForm = ({
   url,
-  setUrl,
   method,
+  requestHistory,
+  setUrl,
   setMethod,
   onSend,
 }: RequestFormProps) => {
@@ -64,7 +65,7 @@ const RequestForm = ({
       >
         <div>
           <div className="max-h-125 overflow-y-auto py-1">
-            {MOCK_HISTORY.map((item, index) => (
+            {requestHistory.map((item, index) => (
               <button
                 key={index}
                 role="menuitem"

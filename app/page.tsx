@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { useHttpRequest } from "@/hooks/useHttpRequest";
 import { updateAt, deleteAt, getStatusText } from "@/lib/utils";
 
+import { MOCK_HISTORY } from "@/mocks/request-history";
+
 import { type AxiosResponse } from "axios";
 import { type ExternalToast } from "sonner";
 import { type HTTPMethod } from "@/app/types/http";
@@ -74,9 +76,10 @@ export default function Home() {
       <div className="flex flex-col gap-4 p-4">
         <RequestForm
           url={url}
-          setUrl={setUrl}
           method={method}
+          requestHistory={MOCK_HISTORY}
           setMethod={setMethod}
+          setUrl={setUrl}
           onSend={sendRequest}
         />
         <RequestTabs
