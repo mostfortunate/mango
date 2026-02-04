@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import JSONEditor from "@/components/json-editor";
 import { ClipboardPaste, Trash2, Trash, AlertTriangleIcon } from "lucide-react";
 
-import { HTTPMethod } from "@/app/types/http";
+import { type HTTPMethod } from "@/app/types/http";
 
 interface QueryParam {
   key: string;
