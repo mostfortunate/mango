@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 import { type HTTPMethod } from "@/app/types/http";
 import { type HistoryItem } from "@/app/types/models";
@@ -30,6 +31,7 @@ const RequestForm = ({
   onSend,
 }: RequestFormProps) => {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const containerRef = useClickOutside(() => setIsHistoryOpen(false), isHistoryOpen);
 
   const handleHistoryItemClick = (historyItem: HistoryItem) => {
     setUrl(historyItem.url);
@@ -38,7 +40,7 @@ const RequestForm = ({
   };
 
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       <InputGroup className={cn(isHistoryOpen && "rounded-b-none")}>
         <AddressBar url={url} onUrlChange={setUrl} />
         <InputGroupAddon align="inline-start">
