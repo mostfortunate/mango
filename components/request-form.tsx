@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
-import { HTTPMethod } from "@/app/types/http";
+import { type HTTPMethod } from "@/app/types/http";
+import { type HistoryItem } from "@/app/types/models";
 import { MOCK_HISTORY } from "@/mocks/request-history";
 
 import {
@@ -22,14 +23,6 @@ import {
 
 import { History } from "lucide-react";
 
-interface RequestFormProps {
-  url: string;
-  method: HTTPMethod;
-  setUrl: (url: string) => void;
-  setMethod: (method: HTTPMethod) => void;
-  onSend: () => void;
-}
-
 type MethodColor = {
   light: string;
   dark: string;
@@ -42,6 +35,129 @@ const HTTP_METHODS: Record<HTTPMethod, MethodColor> = {
   PUT: { light: "text-orange-500", dark: "text-orange-500" },
   DELETE: { light: "text-red-500", dark: "text-red-500" },
 };
+
+interface MethodSelectorProps {
+  method: HTTPMethod;
+  setMethod: (method: HTTPMethod) => void;
+  theme: "light" | "dark";
+}
+
+const MethodSelector = ({ method, setMethod, theme }: MethodSelectorProps) => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <InputGroupButton
+          className={`font-mono ${HTTP_METHODS[method][theme]}`}
+          variant="outline"
+        >
+          {method}
+        </InputGroupButton>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-38">
+        {Object.entries(HTTP_METHODS).map(([name, color]) => (
+          <DropdownMenuCheckboxItem
+            key={name}
+            checked={method === name}
+            onCheckedChange={() => setMethod(name as HTTPMethod)}
+            className={`font-mono ${color[theme]}`}
+          >
+            {name}
+          </DropdownMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+interface ActionsProps {
+  isHistoryOpen: boolean;
+  onToggleHistory: (isOpen: boolean) => void;
+  onSend: () => void;
+}
+
+const Actions = ({ isHistoryOpen, onToggleHistory, onSend }: ActionsProps) => {
+  return (
+    <>
+      <InputGroupButton
+        className="bg-transparent"
+        variant="secondary"
+        onClick={() => onToggleHistory(!isHistoryOpen)}
+        aria-haspopup="menu"
+        aria-expanded={isHistoryOpen}
+        aria-controls="request-history-menu"
+      >
+        <History />
+        <span className="sr-only">Request History</span>
+      </InputGroupButton>
+      <InputGroupButton
+        variant="default"
+        className="text-primary-foreground px-4 font-semibold"
+        onClick={onSend}
+      >
+        Send
+      </InputGroupButton>
+    </>
+  );
+};
+
+interface AddressBarProps {
+  url: string;
+  onUrlChange: (url: string) => void;
+}
+
+const AddressBar = ({ url, onUrlChange }: AddressBarProps) => {
+  return (
+    <InputGroupInput
+      id="inline-start-input"
+      className="font-mono"
+      type="url"
+      placeholder="https://example.com"
+      value={url}
+      onChange={(e) => onUrlChange(e.target.value)}
+    />
+  );
+};
+
+interface RequestHistoryRowProps {
+  item: HistoryItem;
+  theme: "light" | "dark";
+}
+
+const RequestHistoryRow = ({ item, theme }: RequestHistoryRowProps) => {
+  return (
+    <>
+      <div className="flex flex-1 items-center gap-3 font-mono">
+        <span
+          className={`flex w-12 justify-start font-mono text-xs font-semibold ${HTTP_METHODS[item.method as HTTPMethod][theme]}`}
+        >
+          {item.method}
+        </span>
+        <span className="text-left text-xs">{item.url}</span>
+      </div>
+      <div className="flex items-center gap-4 font-mono font-medium">
+        <span className="text-muted-foreground text-left text-xs">
+          {item.time}
+        </span>
+        <span
+          className={`flex w-8 justify-center text-xs ${item.status === 200 ? "text-green-500" : "text-orange-500"}`}
+        >
+          {item.status}
+        </span>
+        <span className="text-muted-foreground w-32 text-left text-xs">
+          {item.statusText}
+        </span>
+      </div>
+    </>
+  );
+};
+
+interface RequestFormProps {
+  url: string;
+  method: HTTPMethod;
+  setUrl: (url: string) => void;
+  setMethod: (method: HTTPMethod) => void;
+  onSend: () => void;
+}
 
 const RequestForm = ({
   url,
@@ -63,57 +179,16 @@ const RequestForm = ({
   return (
     <div className="relative">
       <InputGroup className={cn(isHistoryOpen && "rounded-b-none")}>
-        <InputGroupInput
-          id="inline-start-input"
-          className="font-mono"
-          type="url"
-          placeholder="https://example.com"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-        />
+        <AddressBar url={url} onUrlChange={setUrl} />
         <InputGroupAddon align="inline-start">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <InputGroupButton
-                className={`font-mono ${HTTP_METHODS[method][theme]}`}
-                variant="outline"
-              >
-                {method}
-              </InputGroupButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-38">
-              {Object.entries(HTTP_METHODS).map(([name, color]) => (
-                <DropdownMenuCheckboxItem
-                  key={name}
-                  checked={method === name}
-                  onCheckedChange={() => setMethod(name as HTTPMethod)}
-                  className={`font-mono ${color[theme]}`}
-                >
-                  {name}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <MethodSelector method={method} setMethod={setMethod} theme={theme} />
         </InputGroupAddon>
         <InputGroupAddon className="gap-2" align="inline-end">
-          <InputGroupButton
-            className="bg-transparent"
-            variant="secondary"
-            onClick={() => setIsHistoryOpen(!isHistoryOpen)}
-            aria-haspopup="menu"
-            aria-expanded={isHistoryOpen}
-            aria-controls="request-history-menu"
-          >
-            <History />
-            <span className="sr-only">Request History</span>
-          </InputGroupButton>
-          <InputGroupButton
-            variant="default"
-            className="text-primary-foreground px-4 font-semibold"
-            onClick={onSend}
-          >
-            Send
-          </InputGroupButton>
+          <Actions
+            isHistoryOpen={isHistoryOpen}
+            onToggleHistory={setIsHistoryOpen}
+            onSend={onSend}
+          />
         </InputGroupAddon>
       </InputGroup>
       <div
@@ -134,29 +209,9 @@ const RequestForm = ({
                 key={index}
                 role="menuitem"
                 onClick={() => handleHistoryItemClick(item)}
-                className="flex w-full items-center justify-between rounded-sm px-3 py-1.5 hover:bg-accent"
+                className="hover:bg-accent flex w-full items-center justify-between rounded-sm px-3 py-1.5"
               >
-                <div className="flex flex-1 items-center gap-3 font-mono">
-                  <span
-                    className={`flex w-12 justify-start font-mono text-xs font-semibold ${HTTP_METHODS[item.method][theme]}`}
-                  >
-                    {item.method}
-                  </span>
-                  <span className="text-left text-xs">{item.url}</span>
-                </div>
-                <div className="flex items-center gap-4 font-mono font-medium">
-                  <span className="text-muted-foreground text-left text-xs">
-                    {item.time}
-                  </span>
-                  <span
-                    className={`flex w-8 justify-center text-xs ${item.status === 200 ? "text-green-500" : "text-orange-500"}`}
-                  >
-                    {item.status}
-                  </span>
-                  <span className="text-muted-foreground w-32 text-left text-xs">
-                    {item.statusText}
-                  </span>
-                </div>
+                <RequestHistoryRow item={item} theme={theme} />
               </button>
             ))}
           </div>

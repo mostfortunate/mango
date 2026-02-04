@@ -1,12 +1,5 @@
 import { HTTPMethod } from "@/app/types/http";
-
-export type HistoryItem = {
-    method: HTTPMethod;
-    url: string;
-    time: string;
-    status: number;
-    statusText: string;
-};
+import { HistoryItem } from "@/app/types/models";
 
 export const MOCK_HISTORY: HistoryItem[] = [
   // GET requests - various statuses
