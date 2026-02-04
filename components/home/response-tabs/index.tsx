@@ -23,7 +23,7 @@ const ResponseTabs = ({
 
   return (
     <Tabs defaultValue={responseTabs[0]} className="w-full">
-      <TabsList variant="line" className="mb-4 flex w-full items-center">
+      <TabsList variant="line" className="flex w-full items-center">
         <div>
           {responseTabs.map((tab) => (
             <TabsTrigger key={tab} value={tab}>

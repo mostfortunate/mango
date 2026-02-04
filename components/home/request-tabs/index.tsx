@@ -39,7 +39,7 @@ const RequestTabs = ({
 
   return (
     <Tabs defaultValue={requestTabs[0]} className="w-full">
-      <TabsList variant="line" className="mb-4">
+      <TabsList variant="line">
         {requestTabs.map((tab) => (
           <TabsTrigger key={tab} value={tab}>
             {tab}
