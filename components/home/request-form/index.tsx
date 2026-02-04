@@ -44,11 +44,13 @@ const RequestForm = ({
 
   return (
     <div ref={containerRef} className="relative">
-      <InputGroup className={cn(isHistoryOpen && "rounded-b-none")}>
-        <AddressBar
-          url={url}
-          onUrlChange={setUrl}
-        />
+      <InputGroup
+        className={cn(
+          isHistoryOpen && "rounded-b-none",
+          "has-[[data-slot=input-group-control]:focus-visible]:ring-0",
+        )}
+      >
+        <AddressBar url={url} onUrlChange={setUrl} />
         <InputGroupAddon align="inline-start">
           <MethodSelector method={method} setMethod={setMethod} />
         </InputGroupAddon>
