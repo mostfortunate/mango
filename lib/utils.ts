@@ -50,6 +50,13 @@ export function getStatusText(res: AxiosResponse): string {
   return "Unknown Status";
 }
 
+export function getStatusColorClass(code: number) {
+  if (code >= 200 && code < 300) return "text-green-500";
+  if (code >= 300 && code < 400) return "text-yellow-500";
+  if (code >= 400) return "text-red-500";
+  return "text-muted-foreground";
+};
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

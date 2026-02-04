@@ -1,5 +1,6 @@
 import { type AxiosResponse } from "axios";
 import prettyBytes from "pretty-bytes";
+import { getStatusColorClass } from "@/lib/utils";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -37,12 +38,7 @@ const ResponseTabs = ({
   if (!response) return <></>;
 
   const responseTabs = ["Body", "Headers"];
-  const getStatusColorClass = (code: number) => {
-    if (code >= 200 && code < 300) return "text-green-500";
-    if (code >= 300 && code < 400) return "text-yellow-500";
-    if (code >= 400) return "text-red-500";
-    return "text-muted-foreground";
-  };
+  
 
   return (
     <Tabs defaultValue={responseTabs[0]} className="w-full">

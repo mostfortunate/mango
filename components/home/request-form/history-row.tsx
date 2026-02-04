@@ -1,3 +1,4 @@
+import { getStatusColorClass } from "@/lib/utils";
 import { type HistoryItem } from "@/app/types/models";
 
 export interface RequestHistoryRowProps {
@@ -22,7 +23,7 @@ export const RequestHistoryRow = ({ item }: RequestHistoryRowProps) => {
           {item.time}
         </span>
         <span
-          className={`flex w-8 justify-center text-xs ${item.status === 200 ? "text-green-500" : "text-orange-500"}`}
+          className={`flex w-8 justify-center text-xs ${getStatusColorClass(item.status)}`}
         >
           {item.status}
         </span>
