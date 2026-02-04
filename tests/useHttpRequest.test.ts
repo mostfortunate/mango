@@ -69,51 +69,63 @@ describe("useHttpRequest pure helpers", () => {
     const headers = [{ key: "", value: "a" }];
     const queryParams = [{ key: "", value: "b" }];
 
-    it("returns error when headers and query params have empty keys", () => {
-      (hasEmptyKeys as jest.Mock)
-        .mockImplementationOnce(() => true)
-        .mockImplementationOnce(() => true);
-
-      const result = validateKeyValueInputs(headers, queryParams);
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe(
+    const cases = [
+      {
+        name: "both headers and query params empty",
+        headersEmpty: true,
+        queryEmpty: true,
+        expectedError:
           "Query parameters and headers must have non-empty keys.",
-        );
-      }
-    });
+      },
+      {
+        name: "only headers empty",
+        headersEmpty: true,
+        queryEmpty: false,
+        expectedError: "Headers must have non-empty keys.",
+      },
+      {
+        name: "only query params empty",
+        headersEmpty: false,
+        queryEmpty: true,
+        expectedError: "Query parameters must have non-empty keys.",
+      },
+      {
+        name: "neither empty",
+        headersEmpty: false,
+        queryEmpty: false,
+        expectedError: null,
+      },
+    ];
 
-    it("returns error when headers have empty keys", () => {
-      (hasEmptyKeys as jest.Mock)
-        .mockImplementationOnce(() => true)
-        .mockImplementationOnce(() => false);
+    it.each(cases)("handles $name", ({
+      headersEmpty,
+      queryEmpty,
+      expectedError,
+    }) => {
+      // mock by argument to avoid relying on call order
+      (hasEmptyKeys as jest.Mock).mockImplementation(
+        (input: { key: string; value: string }[]) => {
+          if (input === headers) {
+            return headersEmpty;
+          }
+          if (input === queryParams) {
+            return queryEmpty;
+          }
+          return false;
+        },
+      );
 
       const result = validateKeyValueInputs(headers, queryParams);
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Headers must have non-empty keys.");
+
+      // All four combinations are covered explicitly.
+      if (expectedError) {
+        expect(result.ok).toBe(false);
+        if (!result.ok) {
+          expect(result.error).toBe(expectedError);
+        }
+      } else {
+        expect(result.ok).toBe(true);
       }
-    });
-
-    it("returns error when query params have empty keys", () => {
-      (hasEmptyKeys as jest.Mock)
-        .mockImplementationOnce(() => false)
-        .mockImplementationOnce(() => true);
-
-      const result = validateKeyValueInputs(headers, queryParams);
-      expect(result.ok).toBe(false);
-      if (!result.ok) {
-        expect(result.error).toBe("Query parameters must have non-empty keys.");
-      }
-    });
-
-    it("returns ok when no empty keys", () => {
-      (hasEmptyKeys as jest.Mock)
-        .mockImplementationOnce(() => false)
-        .mockImplementationOnce(() => false);
-
-      const result = validateKeyValueInputs(headers, queryParams);
-      expect(result.ok).toBe(true);
     });
   });
 
