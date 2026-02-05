@@ -18,39 +18,15 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-import { type CollectionEndpoint } from "@/app/types/models";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Folder, Plus, Ellipsis } from "lucide-react";
+import { type Collection } from "@/app/types/models";
 
-type Collection = {
-  name: string;
-  endpoints: CollectionEndpoint[];
-};
-
-const data: Collection[] = [
-  {
-    name: "Drafts",
-    endpoints: [
-      {
-        id: "1",
-        name: "My First Request",
-        method: "GET",
-        url: "/first-request",
-      },
-    ],
-  },
-  {
-    name: "FindEats",
-    endpoints: [
-      { id: "2", name: "Restaurants", method: "GET", url: "/restaurants" },
-      { id: "3", name: "Onboard", method: "POST", url: "/onboard" },
-    ],
-  },
-];
-
-export default function AppSidebar({
-  ...props
-}: React.ComponentProps<typeof Sidebar>) {
+export interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  data: Collection[];
+}
+export default function AppSidebar({ ...props }: AppSidebarProps) {
+  const { data } = props;
   return (
     <Sidebar {...props}>
       <SidebarContent>

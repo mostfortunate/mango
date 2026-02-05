@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Lora, IBM_Plex_Mono } from "next/font/google";
+
 import { Toaster } from "@/components/ui/sonner";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -7,6 +8,8 @@ import { ModeToggle } from "@/components/mode-toggle";
 import AppSidebar from "@/components/app-sidebar";
 import Footer from "@/components/footer";
 import "./globals.css";
+
+import { MOCK_COLLECTIONS } from "@/mocks/collections";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -48,7 +51,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <SidebarProvider defaultOpen={true}>
-            <AppSidebar />
+            <AppSidebar data={MOCK_COLLECTIONS} />
             <main className="flex w-full flex-1 flex-col">
               <div className="flex-1">{children}</div>
               <Footer />

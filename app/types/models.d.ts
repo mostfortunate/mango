@@ -5,6 +5,12 @@ export type CollectionEndpoint = {
   url: string;
 }
 
+export type Collection = {
+  id: string;
+  name: string;
+  endpoints: CollectionEndpoint[];
+};
+
 export type HistoryItem = {
     method: HTTPMethod;
     url: string;
