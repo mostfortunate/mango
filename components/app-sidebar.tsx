@@ -254,7 +254,7 @@ export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
                                   <Ellipsis className="size-4" />
                                 </Button>
                                 <span
-                                  className="text-muted-foreground group-hover/endpoint:text-sidebar-accent-foreground w-10 font-mono text-xs font-semibold"
+                                  className="text-muted-foreground group-hover/endpoint:text-sidebar-accent-foreground w-12 font-mono text-xs font-semibold"
                                   style={{ color: `var(${itemColorVar})` }}
                                 >
                                   {endpoint.method}
