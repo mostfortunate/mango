@@ -40,6 +40,13 @@ export const BodyTab = ({ responseBody }: BodyTabProps) => (
                 variant="secondary"
                 size="icon-xs"
                 aria-label="Copy response body"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(responseBody);
+                  } catch (error) {
+                    console.warn("Copy failed", error);
+                  }
+                }}
               >
                 <Copy />
               </Button>
