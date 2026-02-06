@@ -26,7 +26,7 @@ import {
 import AppSidebarFooter from "@/components/app-sidebar/sidebar-footer";
 import RenameDialog from "@/components/app-sidebar/rename-dialog";
 import CollectionActions from "@/components/app-sidebar/collection-actions";
-import EndpointActions from "@/components/app-sidebar/endpoint-actions";
+import EndpointItem from "@/components/app-sidebar/endpoint-item";
 
 import { ChevronRight, Folder } from "lucide-react";
 
@@ -263,58 +263,29 @@ export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
                     <CollapsibleContent>
                       <SidebarMenuSub className="relative mx-0 translate-x-0 border-l-0 px-0">
                         <span className="bg-sidebar-border pointer-events-none absolute top-0 bottom-0 left-4 z-10 w-px" />
-                        {collection.endpoints.map((endpoint) => {
-                          const isActive =
-                            endpoint.id === resolvedActiveEndpointId;
-                          const itemColorVar = `--http-method-${endpoint.method.toLowerCase()}`;
-
-                          return (
-                            <SidebarMenuItem
-                              key={endpoint.id}
-                              className={cn(
-                                "group/endpoint relative flex items-center gap-2 rounded-md",
-                                "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                                isActive &&
-                                  "bg-sidebar-accent text-sidebar-accent-foreground",
-                              )}
-                            >
-                              <SidebarMenuButton
-                                isActive={isActive}
-                                className="min-w-0 flex-1 pl-6"
-                                onClick={() =>
-                                  handleEndpointSelect(endpoint.id)
-                                }
-                              >
-                                <span className="truncate text-sm">
-                                  {endpoint.name}
-                                </span>
-                              </SidebarMenuButton>
-                              <span className="ml-auto flex items-center justify-end gap-1">
-                                <EndpointActions
-                                  onRename={() =>
-                                    handleRenameStart(
-                                      collection.id,
-                                      endpoint.id,
-                                      endpoint.name,
-                                    )
-                                  }
-                                  onDelete={() =>
-                                    handleDeleteEndpoint(
-                                      collection.id,
-                                      endpoint.id,
-                                    )
-                                  }
-                                />
-                                <span
-                                  className="text-muted-foreground group-hover/endpoint:text-sidebar-accent-foreground w-11 font-mono text-xs font-semibold"
-                                  style={{ color: `var(${itemColorVar})` }}
-                                >
-                                  {endpoint.method}
-                                </span>
-                              </span>
-                            </SidebarMenuItem>
-                          );
-                        })}
+                        {collection.endpoints.map((endpoint) => (
+                          <EndpointItem
+                            key={endpoint.id}
+                            endpoint={endpoint}
+                            isActive={endpoint.id === resolvedActiveEndpointId}
+                            onSelect={() =>
+                              handleEndpointSelect(endpoint.id)
+                            }
+                            onRename={() =>
+                              handleRenameStart(
+                                collection.id,
+                                endpoint.id,
+                                endpoint.name,
+                              )
+                            }
+                            onDelete={() =>
+                              handleDeleteEndpoint(
+                                collection.id,
+                                endpoint.id,
+                              )
+                            }
+                          />
+                        ))}
                       </SidebarMenuSub>
                     </CollapsibleContent>
                   </SidebarMenu>
