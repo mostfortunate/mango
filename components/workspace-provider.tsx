@@ -56,7 +56,19 @@ export function WorkspaceProvider({
     const endpoint = getEndpointById(endpointId);
     if (!endpoint) return;
     
-    loadFromEndpoint(endpoint.method, endpoint.url);
+    // build the url by combining collection's baseUrl and endpoint's path, make sure that there's exactly one slash between them
+    const collection = collections.find((col) =>
+      col.endpoints.some((ep) => ep.id === endpointId),
+    );
+    
+    const baseUrl = collection?.baseUrl || "";
+    const path = endpoint.url || "";
+    const url =
+      baseUrl.endsWith("/") && path.startsWith("/")
+        ? baseUrl + path.slice(1)
+        : baseUrl + path;
+    
+    loadFromEndpoint(endpoint.method, url);
   };
 
   const draftActions = {
