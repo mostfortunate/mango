@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
+import { WorkspaceProvider } from "@/components/workspace-provider";
 import AppSidebar from "@/components/app-sidebar";
 import Footer from "@/components/footer";
 import "./globals.css";
@@ -41,14 +42,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider defaultOpen={true}>
-            <AppSidebar data={MOCK_COLLECTIONS} />
-            <main className="flex w-full flex-1 flex-col">
-              <div className="flex-1">{children}</div>
-              <Footer />
-            </main>
-            <Toaster visibleToasts={3} richColors />
-          </SidebarProvider>
+          <WorkspaceProvider initialCollections={MOCK_COLLECTIONS}>
+            <SidebarProvider defaultOpen={true}>
+              <AppSidebar />
+              <main className="flex w-full flex-1 flex-col">
+                <div className="flex-1">{children}</div>
+                <Footer />
+              </main>
+              <Toaster visibleToasts={3} richColors />
+            </SidebarProvider>
+          </WorkspaceProvider>
         </ThemeProvider>
       </body>
     </html>

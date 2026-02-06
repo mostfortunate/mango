@@ -1,21 +1,15 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useHttpRequest } from "@/hooks/use-http-request";
 import { useRequestHistory } from "@/hooks/use-request-history";
-import {
-  getStatusText,
-  deleteKeyValueRow,
-  updateKeyValueRows,
-} from "@/lib/utils";
+import { getStatusText } from "@/lib/utils";
+import { useWorkspace } from "@/components/workspace-provider";
 
 import { MOCK_HISTORY } from "@/mocks/request-history";
 
 import { type AxiosResponse } from "axios";
-import { type HTTPMethod } from "@/app/types/http";
-import { type QueryParam, type Header } from "@/app/types/models";
-
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import {
   Tooltip,
@@ -30,12 +24,21 @@ import ResponseTabs from "@/components/home/response-tabs";
 const USE_MOCK_DATA = false;
 
 export default function Home() {
-  const [url, setUrl] = useState<string>("");
-  const [method, setMethod] = useState<HTTPMethod>("GET");
-  const [queryParams, setQueryParams] = useState<QueryParam[]>([]);
-  const [requestBody, setRequestBody] = useState<string>("");
+  const { draft, draftActions, autofillExistingUrl, setAutofillExistingUrl } =
+    useWorkspace();
+  const {
+    setMethod,
+    setUrl,
+    updateQueryParam,
+    deleteQueryParam,
+    setQueryParams,
+    updateHeader,
+    deleteHeader,
+    setHeaders,
+    setBody,
+  } = draftActions;
+
   const [responseBody, setResponseBody] = useState<string>("");
-  const [headers, setHeaders] = useState<Header[]>([]);
   const [response, setResponse] = useState<AxiosResponse | null>(null);
 
   function updateEndTime(response: AxiosResponse): AxiosResponse {
@@ -45,37 +48,16 @@ export default function Home() {
     return response;
   }
 
-  // MARK: Handlers
-  const updateQueryParam = (index: number, updates: Partial<QueryParam>) => {
-    setQueryParams((prev) => updateKeyValueRows(prev, index, updates));
-  };
-
-  const deleteQueryParam = (index: number) => {
-    setQueryParams((prev) => deleteKeyValueRow(prev, index));
-  };
-
-  const updateHeader = (index: number, updates: Partial<Header>) => {
-    setHeaders((prev) => updateKeyValueRows(prev, index, updates));
-  };
-
-  const deleteHeader = (index: number) => {
-    setHeaders((prev) => deleteKeyValueRow(prev, index));
-  };
-
-  const onRequestBodyChange = useCallback((body: string) => {
-    setRequestBody(body);
-  }, []);
-
   const { history: requestHistory, addFromResponse } = useRequestHistory(
     USE_MOCK_DATA ? MOCK_HISTORY : [],
   );
 
   const { sendRequest } = useHttpRequest({
-    url,
-    method,
-    queryParams,
-    headers,
-    requestBody,
+    url: draft.url,
+    method: draft.method,
+    queryParams: draft.queryParams,
+    headers: draft.headers,
+    requestBody: draft.body,
     setResponse,
     setResponseBody,
     addFromResponse,
@@ -98,25 +80,27 @@ export default function Home() {
     <>
       <div className="flex flex-col gap-4 p-4">
         <RequestForm
-          url={url}
-          method={method}
+          url={draft.url}
+          method={draft.method}
           requestHistory={requestHistory}
           setMethod={setMethod}
           setUrl={setUrl}
+          autofillExistingUrl={autofillExistingUrl}
+          onAutofillExistingUrlChange={setAutofillExistingUrl}
           onSend={sendRequest}
         />
         <RequestTabs
-          method={method}
-          queryParams={queryParams}
+          method={draft.method}
+          queryParams={draft.queryParams}
           updateQueryParam={updateQueryParam}
           deleteQueryParam={deleteQueryParam}
           setQueryParams={setQueryParams}
-          headers={headers}
+          headers={draft.headers}
           updateHeader={updateHeader}
           deleteHeader={deleteHeader}
           setHeaders={setHeaders}
-          requestBody={requestBody}
-          onRequestBodyChange={onRequestBodyChange}
+          requestBody={draft.body}
+          onRequestBodyChange={setBody}
         />
         {response && (
           <motion.div

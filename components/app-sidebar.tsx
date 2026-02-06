@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo, useCallback, type ComponentProps } from "react";
+import { useState, type ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 import { type Collection } from "@/app/types/models";
+import { useWorkspace } from "@/components/workspace-provider";
 
 import {
   Sidebar,
@@ -28,64 +29,51 @@ import { ModeToggle } from "@/components/mode-toggle";
 
 import { ChevronRight, Folder, Plus, Ellipsis } from "lucide-react";
 
-export interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
-  data: Collection[];
-}
-export default function AppSidebar({ ...props }: AppSidebarProps) {
-  const { data, ...sidebarProps } = props;
+export type AppSidebarProps = ComponentProps<typeof Sidebar>;
+export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
+  const {
+    collections: data,
+    activeEndpointId,
+    selectEndpoint,
+  } = useWorkspace();
   const [expandedCollectionIds, setExpandedCollectionIds] = useState<
     Set<string>
   >(() => new Set());
   const [hasCollectionInteraction, setHasCollectionInteraction] =
     useState(false);
-  const [activeEndpointId, setActiveEndpointId] = useState<string | null>(null);
   const [lastSelectedEndpointId, setLastSelectedEndpointId] = useState<
     string | null
   >(null);
 
-  const endpointLookup = useMemo(() => {
-    const map = new Map<string, { collectionId: string }>();
-    data.forEach((collection) => {
-      collection.endpoints.forEach((endpoint) => {
-        map.set(endpoint.id, { collectionId: collection.id });
-      });
+  const endpointLookup = new Map<string, { collectionId: string }>();
+  data.forEach((collection) => {
+    collection.endpoints.forEach((endpoint) => {
+      endpointLookup.set(endpoint.id, { collectionId: collection.id });
     });
-    return map;
-  }, [data]);
+  });
 
-  const defaultExpandedCollectionIds = useMemo(() => {
-    const firstCollection = data[0];
-    return firstCollection ? new Set([firstCollection.id]) : new Set<string>();
-  }, [data]);
+  const firstCollection = data[0];
+  const defaultExpandedCollectionIds = firstCollection
+    ? new Set([firstCollection.id])
+    : new Set<string>();
 
-  const effectiveExpandedCollectionIds = useMemo(() => {
-    return hasCollectionInteraction
-      ? expandedCollectionIds
-      : defaultExpandedCollectionIds;
-  }, [
-    defaultExpandedCollectionIds,
-    expandedCollectionIds,
-    hasCollectionInteraction,
-  ]);
+  const effectiveExpandedCollectionIds = hasCollectionInteraction
+    ? expandedCollectionIds
+    : defaultExpandedCollectionIds;
 
-  const resolveDefaultEndpointId = useCallback(
-    (collection: Collection) => {
-      if (!collection.endpoints.length) {
-        return null;
-      }
+  const resolveDefaultEndpointId = (collection: Collection) => {
+    if (!collection.endpoints.length) {
+      return null;
+    }
 
-      const lastSelectedInCollection = collection.endpoints.find(
-        (endpoint) => endpoint.id === lastSelectedEndpointId,
-      );
+    const lastSelectedInCollection = collection.endpoints.find(
+      (endpoint) => endpoint.id === lastSelectedEndpointId,
+    );
 
-      return (
-        lastSelectedInCollection?.id ?? collection.endpoints[0]?.id ?? null
-      );
-    },
-    [lastSelectedEndpointId],
-  );
+    return lastSelectedInCollection?.id ?? collection.endpoints[0]?.id ?? null;
+  };
 
-  const resolvedActiveEndpointId = useMemo(() => {
+  const resolvedActiveEndpointId = (() => {
     if (!data.length) {
       return null;
     }
@@ -107,48 +95,38 @@ export default function AppSidebar({ ...props }: AppSidebarProps) {
     }
 
     return resolveDefaultEndpointId(targetCollection);
-  }, [
-    activeEndpointId,
-    data,
-    effectiveExpandedCollectionIds,
-    endpointLookup,
-    resolveDefaultEndpointId,
-  ]);
+  })();
 
-  const handleCollectionOpenChange = useCallback(
-    (collection: Collection, open: boolean) => {
-      setHasCollectionInteraction(true);
-      setExpandedCollectionIds((prev) => {
-        const base = hasCollectionInteraction
-          ? prev
-          : defaultExpandedCollectionIds;
-        const next = new Set(base);
-        if (open) {
-          next.add(collection.id);
-        } else {
-          next.delete(collection.id);
-        }
-        return next;
-      });
-
+  const handleCollectionOpenChange = (
+    collection: Collection,
+    open: boolean,
+  ) => {
+    setHasCollectionInteraction(true);
+    setExpandedCollectionIds((prev) => {
+      const base = hasCollectionInteraction
+        ? prev
+        : defaultExpandedCollectionIds;
+      const next = new Set(base);
       if (open) {
-        const defaultEndpointId = resolveDefaultEndpointId(collection);
-        if (defaultEndpointId) {
-          setActiveEndpointId(defaultEndpointId);
-        }
+        next.add(collection.id);
+      } else {
+        next.delete(collection.id);
       }
-    },
-    [
-      defaultExpandedCollectionIds,
-      hasCollectionInteraction,
-      resolveDefaultEndpointId,
-    ],
-  );
+      return next;
+    });
 
-  const handleEndpointSelect = useCallback((endpointId: string) => {
-    setActiveEndpointId(endpointId);
+    if (open) {
+      const defaultEndpointId = resolveDefaultEndpointId(collection);
+      if (defaultEndpointId) {
+        selectEndpoint(defaultEndpointId);
+      }
+    }
+  };
+
+  const handleEndpointSelect = (endpointId: string) => {
+    selectEndpoint(endpointId);
     setLastSelectedEndpointId(endpointId);
-  }, []);
+  };
 
   return (
     <Sidebar {...sidebarProps}>
