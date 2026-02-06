@@ -172,10 +172,7 @@ export default function AppSidebar({ ...props }: AppSidebarProps) {
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton className="min-w-0 flex-1 hover:bg-transparent hover:text-inherit">
                           <span className="relative flex size-4 items-center justify-center">
-                            <Folder
-                              className="text-primary size-4 transition-opacity group-hover/collection:opacity-0"
-                              fill="#5e17eb"
-                            />
+                            <Folder className="text-muted-foreground size-4 transition-opacity group-hover/collection:opacity-0" />
                             <ChevronRight
                               className={cn(
                                 "absolute size-4 opacity-0 transition-opacity group-hover/collection:opacity-100",
