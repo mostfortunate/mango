@@ -88,7 +88,7 @@ export function parseJsonBody(requestBody: string): ValidationResult<unknown> {
   try {
     return { ok: true, value: JSON.parse(requestBody) };
   } catch {
-    return { ok: false, error: "Request body must be valid JSON." };
+    return { ok: false, error: "Request body must contain valid JSON." };
   }
 }
 

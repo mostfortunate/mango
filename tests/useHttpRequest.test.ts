@@ -150,7 +150,7 @@ describe("useHttpRequest pure helpers", () => {
       const result = parseJsonBody("{bad json");
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error).toBe("Request body must be valid JSON.");
+        expect(result.error).toBe("Request body must contain valid JSON.");
       }
     });
   });
