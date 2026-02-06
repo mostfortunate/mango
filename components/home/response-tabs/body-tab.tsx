@@ -66,7 +66,7 @@ export const BodyTab = ({ responseBody }: BodyTabProps) => (
           </Tooltip>
         </CardAction>
       </CardHeader>
-      <CardContent className="flex flex-col gap-2">
+      <CardContent className="flex flex-col gap-2 max-h-96 overflow-auto">
         <JSONEditor value={responseBody} editable={false} />
       </CardContent>
     </Card>
