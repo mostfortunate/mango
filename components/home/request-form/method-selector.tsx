@@ -21,7 +21,7 @@ export const MethodSelector = ({ method, setMethod }: MethodSelectorProps) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <InputGroupButton
-          className="font-mono"
+          className="font-mono font-semibold"
           style={{ color: `var(${methodColorVar})` }}
           variant="outline"
         >
@@ -36,7 +36,7 @@ export const MethodSelector = ({ method, setMethod }: MethodSelectorProps) => {
               key={name}
               checked={method === name}
               onCheckedChange={() => setMethod(name)}
-              className="font-mono"
+              className="font-mono font-semibold"
               style={{ color: `var(${itemColorVar})` }}
             >
               {name}
