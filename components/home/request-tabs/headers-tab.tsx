@@ -62,7 +62,7 @@ export const HeadersTab = ({
             Add
           </Button>
         </CardAction>
-        <CardAction>
+        {headers.length > 0 && <CardAction>
           <Button
             className="font-bold"
             size="sm"
@@ -72,7 +72,7 @@ export const HeadersTab = ({
             <Trash2 />
             Clear
           </Button>
-        </CardAction>
+        </CardAction>}
       </CardFooter>
     </Card>
   </TabsContent>

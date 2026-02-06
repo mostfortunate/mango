@@ -62,7 +62,7 @@ export const ParamsTab = ({
             Add
           </Button>
         </CardAction>
-        <CardAction>
+        {queryParams.length > 0 && <CardAction>
           <Button
             className="font-bold"
             size="sm"
@@ -72,7 +72,7 @@ export const ParamsTab = ({
             <Trash2 />
             Clear
           </Button>
-        </CardAction>
+        </CardAction>}
       </CardFooter>
     </Card>
   </TabsContent>
