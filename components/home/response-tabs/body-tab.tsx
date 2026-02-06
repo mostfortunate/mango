@@ -1,3 +1,5 @@
+import { toast, type ExternalToast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
 
@@ -18,6 +20,11 @@ import {
 
 import JSONEditor from "@/components/json-editor";
 import { Copy } from "lucide-react";
+
+const TOAST_PROPS: ExternalToast = {
+  position: "bottom-right",
+  duration: 1200,
+};
 
 export interface BodyTabProps {
   responseBody: string;
@@ -43,8 +50,10 @@ export const BodyTab = ({ responseBody }: BodyTabProps) => (
                 onClick={async () => {
                   try {
                     await navigator.clipboard.writeText(responseBody);
+                    toast.success("Successfully copied to clipboard.", TOAST_PROPS);
                   } catch (error) {
                     console.warn("Copy failed", error);
+                    toast.error("Failed to copy to clipboard.", TOAST_PROPS);
                   }
                 }}
               >

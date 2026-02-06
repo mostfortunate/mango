@@ -1,3 +1,5 @@
+import { toast, type ExternalToast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
 
@@ -18,6 +20,11 @@ import {
 
 import JSONEditor from "@/components/json-editor";
 import { ClipboardPaste, Trash2 } from "lucide-react";
+
+const TOAST_PROPS: ExternalToast = {
+  position: "bottom-right",
+  duration: 1200,
+};
 
 export interface BodyTabProps {
   requestBody: string;
@@ -43,9 +50,22 @@ export const BodyTab = ({ requestBody, onRequestBodyChange }: BodyTabProps) => (
                   size="icon-xs"
                   aria-label="Paste request body"
                   onClick={() => {
-                    navigator.clipboard.readText().then((text) => {
-                      onRequestBodyChange(text);
-                    });
+                    navigator.clipboard
+                      .readText()
+                      .then((text) => {
+                        onRequestBodyChange(text);
+                        toast.success(
+                          "Successfully pasted from clipboard.",
+                          TOAST_PROPS,
+                        );
+                      })
+                      .catch((error) => {
+                        console.warn("Paste failed", error);
+                        toast.error(
+                          "Failed to paste from clipboard.",
+                          TOAST_PROPS,
+                        );
+                      });
                   }}
                 >
                   <ClipboardPaste />
@@ -63,7 +83,10 @@ export const BodyTab = ({ requestBody, onRequestBodyChange }: BodyTabProps) => (
                   variant="destructive"
                   size="icon-xs"
                   aria-label="Remove request body"
-                  onClick={() => onRequestBodyChange("")}
+                  onClick={() => {
+                    onRequestBodyChange("");
+                    toast.warning("Cleared request body.", TOAST_PROPS);
+                  }}
                 >
                   <Trash2 />
                 </Button>
