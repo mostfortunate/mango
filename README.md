@@ -54,8 +54,6 @@ Via is a free, lightweight, easy-to-use HTTP client. It provides a modern, intui
 
 ---
 
----
-
 ## Customization
 
 - Add new HTTP methods or features in `app/page.tsx`.
