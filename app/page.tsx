@@ -24,8 +24,7 @@ import ResponseTabs from "@/components/home/response-tabs";
 const USE_MOCK_DATA = false;
 
 export default function Home() {
-  const { draft, draftActions, autofillExistingUrl, setAutofillExistingUrl } =
-    useWorkspace();
+  const { draft, draftActions } = useWorkspace();
   const {
     setMethod,
     setUrl,
@@ -85,8 +84,6 @@ export default function Home() {
           requestHistory={requestHistory}
           setMethod={setMethod}
           setUrl={setUrl}
-          autofillExistingUrl={autofillExistingUrl}
-          onAutofillExistingUrlChange={setAutofillExistingUrl}
           onSend={sendRequest}
         />
         <RequestTabs

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
 
 import { type Collection } from "@/app/types/models";
 import { useCollections } from "@/hooks/use-collections";
@@ -13,11 +13,9 @@ import {
 export type WorkspaceContextValue = {
   collections: Collection[];
   activeEndpointId: string | null;
-  autofillExistingUrl: boolean;
   draft: RequestDraft;
   draftActions: Omit<RequestDraftActions, "draft">;
   selectEndpoint: (endpointId: string) => void;
-  setAutofillExistingUrl: (next: boolean) => void;
 };
 
 const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
@@ -37,7 +35,6 @@ export function WorkspaceProvider({
     selectEndpoint: selectEndpointBase,
     getEndpointById,
   } = useCollections(initialCollections);
-  const [autofillExistingUrl, setAutofillExistingUrl] = useState(false);
 
   const {
     draft,
@@ -58,11 +55,7 @@ export function WorkspaceProvider({
     selectEndpointBase(endpointId);
     const endpoint = getEndpointById(endpointId);
     if (!endpoint) return;
-
-    // only load method and URL if draft URL is empty
-    //   if (!draft.url.trim() || autofillExistingUrl) {
-    //     loadFromEndpoint(endpoint.method, endpoint.url);
-    //   }
+    
     loadFromEndpoint(endpoint.method, endpoint.url);
   };
 
@@ -84,8 +77,6 @@ export function WorkspaceProvider({
     collections,
     activeEndpointId,
     selectEndpoint,
-    autofillExistingUrl,
-    setAutofillExistingUrl,
     draft,
     draftActions,
   };

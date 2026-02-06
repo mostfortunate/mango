@@ -19,8 +19,6 @@ interface RequestFormProps {
   requestHistory: HistoryItem[];
   setMethod: (method: HTTPMethod) => void;
   setUrl: (url: string) => void;
-  autofillExistingUrl: boolean;
-  onAutofillExistingUrlChange: (next: boolean) => void;
   onSend: () => void;
 }
 
@@ -31,8 +29,6 @@ const RequestForm = ({
   setMethod,
   setUrl,
   onSend,
-  // autofillExistingUrl,
-  // onAutofillExistingUrlChange,
 }: RequestFormProps) => {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const containerRef = useClickOutside(
@@ -63,8 +59,6 @@ const RequestForm = ({
             isHistoryOpen={isHistoryOpen}
             onToggleHistory={setIsHistoryOpen}
             onSend={onSend}
-            // autofillExistingUrl={autofillExistingUrl}
-            // onAutofillExistingUrlChange={onAutofillExistingUrlChange}
           />
         </InputGroupAddon>
       </InputGroup>
