@@ -14,6 +14,7 @@ export type UseCollectionsResult = {
     endpointId: string,
     name: string,
   ) => void;
+  renameCollection: (collectionId: string, name: string) => void;
 };
 
 export function useCollections(
@@ -92,6 +93,14 @@ export function useCollections(
     );
   };
 
+  const renameCollection = (collectionId: string, name: string) => {
+    setCollections((prev) =>
+      prev.map((collection) =>
+        collection.id === collectionId ? { ...collection, name } : collection,
+      ),
+    );
+  };
+
   return {
     collections,
     activeEndpointId,
@@ -101,5 +110,6 @@ export function useCollections(
     addEndpoint,
     deleteEndpoint,
     renameEndpoint,
+    renameCollection,
   };
 }

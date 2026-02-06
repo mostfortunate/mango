@@ -24,6 +24,7 @@ export type WorkspaceContextValue = {
     endpointId: string,
     name: string,
   ) => void;
+  renameCollection: (collectionId: string, name: string) => void;
 };
 
 const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
@@ -46,6 +47,7 @@ export function WorkspaceProvider({
     addEndpoint,
     deleteEndpoint,
     renameEndpoint,
+    renameCollection,
   } = useCollections(initialCollections);
 
   const {
@@ -105,6 +107,7 @@ export function WorkspaceProvider({
     addEndpoint,
     deleteEndpoint,
     renameEndpoint,
+    renameCollection,
     draft,
     draftActions,
   };

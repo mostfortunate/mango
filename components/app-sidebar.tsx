@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/collapsible";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -53,6 +54,7 @@ export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
     addEndpoint,
     deleteEndpoint,
     renameEndpoint,
+    renameCollection,
     draft,
   } = useWorkspace();
   const [expandedCollectionIds, setExpandedCollectionIds] = useState<
@@ -69,6 +71,12 @@ export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
     collectionId: string;
     endpointId: string;
   } | null>(null);
+  const [collectionRenameDialogOpen, setCollectionRenameDialogOpen] =
+    useState(false);
+  const [collectionRenameValue, setCollectionRenameValue] = useState("");
+  const [collectionRenameTarget, setCollectionRenameTarget] = useState<
+    string | null
+  >(null);
 
   const endpointLookup = new Map<string, { collectionId: string }>();
   data.forEach((collection) => {
@@ -202,6 +210,25 @@ export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
     setRenameDialogOpen(false);
   };
 
+  const handleCollectionRenameStart = (
+    collectionId: string,
+    currentName: string,
+  ) => {
+    setCollectionRenameTarget(collectionId);
+    setCollectionRenameValue(currentName);
+    setCollectionRenameDialogOpen(true);
+  };
+
+  const handleCollectionRenameSubmit = () => {
+    if (!collectionRenameTarget) {
+      return;
+    }
+
+    const nextName = collectionRenameValue.trim() || "New Collection";
+    renameCollection(collectionRenameTarget, nextName);
+    setCollectionRenameDialogOpen(false);
+  };
+
   return (
     <Sidebar {...sidebarProps}>
       <SidebarContent className="mt-2 gap-0">
@@ -243,7 +270,13 @@ export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
                           variant="ghost"
                           size="icon"
                           className="pointer-events-none size-7 opacity-0 transition-opacity group-hover/collection:pointer-events-auto group-hover/collection:opacity-100"
-                          onClick={(event) => event.stopPropagation()}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleCollectionRenameStart(
+                              collection.id,
+                              collection.name,
+                            );
+                          }}
                           aria-label="Collection actions"
                         >
                           <Ellipsis className="size-4" />
@@ -359,26 +392,69 @@ export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
       </SidebarContent>
       <Dialog open={renameDialogOpen} onOpenChange={setRenameDialogOpen}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Rename endpoint</DialogTitle>
-          </DialogHeader>
-          <Input
-            value={renameValue}
-            onChange={(event) => setRenameValue(event.target.value)}
-            placeholder="Endpoint name"
-          />
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setRenameDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="button" onClick={handleRenameSubmit}>
-              Save
-            </Button>
-          </DialogFooter>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              handleRenameSubmit();
+            }}
+            className="grid gap-4"
+          >
+            <DialogHeader>
+              <DialogTitle>Rename endpoint</DialogTitle>
+            </DialogHeader>
+            <Input
+              value={renameValue}
+              onChange={(event) => setRenameValue(event.target.value)}
+              placeholder="Endpoint name"
+            />
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setRenameDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button type="submit">Save</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={collectionRenameDialogOpen}
+        onOpenChange={setCollectionRenameDialogOpen}
+      >
+        <DialogContent>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              handleCollectionRenameSubmit();
+            }}
+            className="grid gap-4"
+          >
+            <DialogHeader>
+              <DialogTitle>Rename collection</DialogTitle>
+            </DialogHeader>
+            <Input
+              value={collectionRenameValue}
+              onChange={(event) => setCollectionRenameValue(event.target.value)}
+              placeholder="Collection name"
+            />
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCollectionRenameDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button type="submit">Save</Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
       <SidebarFooter className="mb-2 flex w-full flex-row gap-2">
