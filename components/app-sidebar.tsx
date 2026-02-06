@@ -159,10 +159,7 @@ export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
     });
   };
 
-  const handleDeleteEndpoint = (
-    collectionId: string,
-    endpointId: string,
-  ) => {
+  const handleDeleteEndpoint = (collectionId: string, endpointId: string) => {
     deleteEndpoint(collectionId, endpointId);
   };
 
