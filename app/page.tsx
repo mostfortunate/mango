@@ -16,6 +16,9 @@ import { type AxiosResponse } from "axios";
 import { type HTTPMethod } from "@/app/types/http";
 import { type QueryParam, type Header } from "@/app/types/models";
 
+import { Kbd, KbdGroup } from "@/components/ui/kbd";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
 import RequestForm from "@/components/home/request-form";
 import RequestTabs from "@/components/home/request-tabs";
 import ResponseTabs from "@/components/home/response-tabs";
@@ -112,6 +115,32 @@ export default function Home() {
             />
           </motion.div>
         )}
+        <div className="fixed right-4 bottom-4 z-50 flex flex-col items-end gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <KbdGroup>
+                <Kbd>Ctrl or ⌘</Kbd>
+                <span>+</span>
+                <Kbd>B</Kbd>
+              </KbdGroup>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Toggle sidebar</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <KbdGroup>
+                <Kbd>Ctrl or ⌘</Kbd>
+                <span>+</span>
+                <Kbd>Enter</Kbd>
+              </KbdGroup>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Send request</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
       </div>
     </>
   );
