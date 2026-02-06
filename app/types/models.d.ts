@@ -8,6 +8,7 @@ export type CollectionEndpoint = {
 export type Collection = {
   id: string;
   name: string;
+  baseUrl: string;
   endpoints: CollectionEndpoint[];
 };
 
