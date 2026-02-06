@@ -14,7 +14,7 @@ import { TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { QueryParamRow } from "@/components/home/request-tabs/query-param-row";
 
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 
 export interface ParamsTabProps {
   queryParams: QueryParam[];
@@ -49,8 +49,8 @@ export const ParamsTab = ({
           />
         ))}
       </CardContent>
-      <CardFooter>
-        <CardAction>
+      <CardFooter className="flex flex-row gap-4">
+        <CardAction className="">
           <Button
             className="font-bold"
             size="sm"
@@ -60,6 +60,17 @@ export const ParamsTab = ({
           >
             <Plus />
             Add
+          </Button>
+        </CardAction>
+        <CardAction>
+          <Button
+            className="font-bold"
+            size="sm"
+            variant="destructive"
+            onClick={() => setQueryParams([])}
+          >
+            <Trash2 />
+            Clear
           </Button>
         </CardAction>
       </CardFooter>

@@ -12,8 +12,9 @@ import {
 
 import { TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-
 import { HeaderRow } from "@/components/home/request-tabs/header-row";
+
+import { Plus, Trash2 } from "lucide-react";
 
 export interface HeadersTabProps {
   headers: Header[];
@@ -48,13 +49,28 @@ export const HeadersTab = ({
           />
         ))}
       </CardContent>
-      <CardFooter>
-        <CardAction className="w-full">
+      <CardFooter className="flex flex-row gap-4">
+        <CardAction className="">
           <Button
+            className="font-bold"
             size="sm"
-            onClick={() => setHeaders([...headers, { key: "", value: "" }])}
+            onClick={() =>
+              setHeaders([...headers, { key: "", value: "" }])
+            }
           >
+            <Plus />
             Add
+          </Button>
+        </CardAction>
+        <CardAction>
+          <Button
+            className="font-bold"
+            size="sm"
+            variant="destructive"
+            onClick={() => setHeaders([])}
+          >
+            <Trash2 />
+            Clear
           </Button>
         </CardAction>
       </CardFooter>
