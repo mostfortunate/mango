@@ -36,6 +36,8 @@ This document defines the rules and context Copilot must follow when generating 
 
 * Ensure functions and components are easy to unit test.
 
+* Do not unnecessarily optimize for performance prematurely; prioritize clarity first. This includes avoiding unnecessary memoization (useMemo, useCallback) or complex patterns unless absolutely justified.
+
 ## Testing & Reliability
 
 * Use **Jest** for unit and integration testing.
