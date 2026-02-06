@@ -28,12 +28,20 @@ describe("useHttpRequest pure helpers", () => {
       const result = validateUrl("");
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error).toBe("Please enter a URL.");
+        expect(result.error).toBe("The address bar is empty.");
+      }
+    });
+
+    it("returns error when url is only whitespace", () => {
+      const result = validateUrl("   ");
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBe("The address bar is empty.");
       }
     });
 
     it("returns error for invalid url", () => {
-      const result = validateUrl("not-a-url");
+      const result = validateUrl("https://");
       expect(result.ok).toBe(false);
       if (!result.ok) {
         expect(result.error).toBe("Please enter a valid URL.");
@@ -55,7 +63,23 @@ describe("useHttpRequest pure helpers", () => {
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.value).toBeInstanceOf(URL);
-        expect(result.value?.protocol).toBe("https:");
+        expect(result.value.protocol).toBe("https:");
+      }
+    });
+
+    it("normalizes no-scheme non-localhost to https", () => {
+      const result = validateUrl("example.com");
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.value.href).toBe("https://example.com/");
+      }
+    });
+
+    it("normalizes no-scheme localhost to http", () => {
+      const result = validateUrl("localhost:3000");
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.value.href).toBe("http://localhost:3000/");
       }
     });
   });

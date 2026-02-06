@@ -75,7 +75,7 @@ export function useHttpRequest({
 
     const axiosPromise = axios(
       buildAxiosConfig({
-        url,
+        url: urlValidation.value.href,
         method,
         queryParams,
         headers,
