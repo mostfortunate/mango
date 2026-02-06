@@ -12,8 +12,9 @@ import {
 
 import { TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-
 import { QueryParamRow } from "@/components/home/request-tabs/query-param-row";
+
+import { Plus } from "lucide-react";
 
 export interface ParamsTabProps {
   queryParams: QueryParam[];
@@ -49,13 +50,15 @@ export const ParamsTab = ({
         ))}
       </CardContent>
       <CardFooter>
-        <CardAction className="w-full">
+        <CardAction>
           <Button
+            className="font-bold"
             size="sm"
             onClick={() =>
               setQueryParams([...queryParams, { key: "", value: "" }])
             }
           >
+            <Plus />
             Add
           </Button>
         </CardAction>
