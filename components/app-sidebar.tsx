@@ -170,7 +170,10 @@ export default function AppSidebar({ ...props }: AppSidebarProps) {
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton className="min-w-0 flex-1 hover:bg-transparent hover:text-inherit">
                           <span className="relative flex size-4 items-center justify-center">
-                            <Folder className="size-4 transition-opacity group-hover/collection:opacity-0" />
+                            <Folder
+                              className="size-4 transition-opacity group-hover/collection:opacity-0 text-primary"
+                              fill="#5e17eb"
+                            />
                             <ChevronRight
                               className={cn(
                                 "absolute size-4 opacity-0 transition-opacity group-hover/collection:opacity-100",
@@ -178,7 +181,7 @@ export default function AppSidebar({ ...props }: AppSidebarProps) {
                               )}
                             />
                           </span>
-                          <span className="truncate">{collection.name}</span>
+                          <span className="truncate font-semibold">{collection.name}</span>
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
                       <span className="ml-auto flex items-center gap-0">
