@@ -41,6 +41,7 @@ export const ParamsTab = ({
           <QueryParamRow
             key={index}
             param={param}
+            count={index + 1}
             onKeyChange={(value) => updateQueryParam(index, { key: value })}
             onValueChange={(value) => updateQueryParam(index, { value })}
             onDelete={() => deleteQueryParam(index)}
