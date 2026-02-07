@@ -38,3 +38,16 @@ export const resolveDefaultEndpointId = (
 
   return lastSelectedInCollection?.id ?? collection.endpoints[0]?.id ?? null;
 };
+
+export const getNextCollectionName = (collections: Collection[]): string => {
+  const baseName = "New Collection";
+  const namePattern = new RegExp(`^${baseName}(?: (\\d+))?$`);
+  const existingSuffixes = collections
+    .map((collection) => collection.name.match(namePattern))
+    .filter((match): match is RegExpMatchArray => match !== null)
+    .map((match) => Number(match[1] ?? 1));
+  const nextSuffix =
+    existingSuffixes.length > 0 ? Math.max(...existingSuffixes) + 1 : 1;
+
+  return nextSuffix === 1 ? baseName : `${baseName} ${nextSuffix}`;
+};

@@ -12,6 +12,7 @@ import CollectionList from "@/components/app-sidebar/collection-list";
 import {
   buildEndpointLookup,
   getDefaultExpandedCollectionIds,
+  getNextCollectionName,
   resolveDefaultEndpointId,
 } from "@/components/app-sidebar/helpers";
 
@@ -106,15 +107,7 @@ export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
   };
 
   const handleAddCollection = () => {
-    const baseName = "New Collection";
-    const namePattern = new RegExp(`^${baseName}(?: (\\d+))?$`);
-    const existingSuffixes = data
-      .map((collection) => collection.name.match(namePattern))
-      .filter((match): match is RegExpMatchArray => match !== null)
-      .map((match) => Number(match[1] ?? 1));
-    const nextSuffix =
-      existingSuffixes.length > 0 ? Math.max(...existingSuffixes) + 1 : 1;
-    const name = nextSuffix === 1 ? baseName : `${baseName} ${nextSuffix}`;
+    const name = getNextCollectionName(data);
 
     addCollection({
       id: crypto.randomUUID(),
