@@ -42,6 +42,7 @@ export default function EndpointActions({
           Rename
         </DropdownMenuItem>
         <DropdownMenuItem
+          variant="destructive"
           onClick={(event) => {
             event.stopPropagation();
             onDelete();

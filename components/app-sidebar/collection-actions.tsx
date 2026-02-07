@@ -45,6 +45,7 @@ export default function CollectionActions({
             Rename
           </DropdownMenuItem>
           <DropdownMenuItem
+            variant="destructive"
             onClick={(event) => {
               event.stopPropagation();
               onDelete();
