@@ -268,9 +268,7 @@ export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
                             key={endpoint.id}
                             endpoint={endpoint}
                             isActive={endpoint.id === resolvedActiveEndpointId}
-                            onSelect={() =>
-                              handleEndpointSelect(endpoint.id)
-                            }
+                            onSelect={() => handleEndpointSelect(endpoint.id)}
                             onRename={() =>
                               handleRenameStart(
                                 collection.id,
@@ -279,10 +277,7 @@ export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
                               )
                             }
                             onDelete={() =>
-                              handleDeleteEndpoint(
-                                collection.id,
-                                endpoint.id,
-                              )
+                              handleDeleteEndpoint(collection.id, endpoint.id)
                             }
                           />
                         ))}
