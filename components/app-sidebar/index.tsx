@@ -4,22 +4,11 @@ import { useState, type ComponentProps } from "react";
 import { type Collection } from "@/app/types/models";
 import { useWorkspace } from "@/components/workspace-provider";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuSub,
-  SidebarRail,
-} from "@/components/ui/sidebar";
-
-import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
+import { Sidebar, SidebarContent, SidebarRail } from "@/components/ui/sidebar";
 
 import AppSidebarFooter from "@/components/app-sidebar/sidebar-footer";
 import RenameDialog from "@/components/app-sidebar/rename-dialog";
-import CollectionHeader from "@/components/app-sidebar/collection-row";
-import EndpointItem from "@/components/app-sidebar/endpoint-item";
+import CollectionList from "@/components/app-sidebar/collection-list";
 
 export type AppSidebarProps = ComponentProps<typeof Sidebar>;
 export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
@@ -209,61 +198,23 @@ export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
   return (
     <Sidebar {...sidebarProps}>
       <SidebarContent className="mt-2 gap-0">
-        {data.map((collection) => {
-          const isOpen = effectiveExpandedCollectionIds.has(collection.id);
-
-          return (
-            <Collapsible
-              key={collection.id}
-              open={isOpen}
-              onOpenChange={(open) =>
-                handleCollectionOpenChange(collection, open)
-              }
-              className="group/collapsible"
-            >
-              <SidebarGroup className="py-0">
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    <CollectionHeader
-                      name={collection.name}
-                      isOpen={isOpen}
-                      onRename={() =>
-                        handleCollectionRenameStart(
-                          collection.id,
-                          collection.name,
-                        )
-                      }
-                      onAddEndpoint={() => handleAddEndpoint(collection.id)}
-                    />
-                    <CollapsibleContent>
-                      <SidebarMenuSub className="relative mx-0 translate-x-0 border-l-0 px-0">
-                        <span className="bg-sidebar-border pointer-events-none absolute top-0 bottom-0 left-4 z-10 w-px" />
-                        {collection.endpoints.map((endpoint) => (
-                          <EndpointItem
-                            key={endpoint.id}
-                            endpoint={endpoint}
-                            isActive={endpoint.id === resolvedActiveEndpointId}
-                            onSelect={() => handleEndpointSelect(endpoint.id)}
-                            onRename={() =>
-                              handleRenameStart(
-                                collection.id,
-                                endpoint.id,
-                                endpoint.name,
-                              )
-                            }
-                            onDelete={() =>
-                              handleDeleteEndpoint(collection.id, endpoint.id)
-                            }
-                          />
-                        ))}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
-            </Collapsible>
-          );
-        })}
+        <CollectionList
+          collections={data}
+          expandedCollectionIds={effectiveExpandedCollectionIds}
+          resolvedActiveEndpointId={resolvedActiveEndpointId}
+          onCollectionOpenChange={handleCollectionOpenChange}
+          onCollectionRename={(collection) =>
+            handleCollectionRenameStart(collection.id, collection.name)
+          }
+          onAddEndpoint={(collection) => handleAddEndpoint(collection.id)}
+          onEndpointSelect={(_, endpointId) => handleEndpointSelect(endpointId)}
+          onEndpointRename={(collection, endpointId, endpointName) =>
+            handleRenameStart(collection.id, endpointId, endpointName)
+          }
+          onEndpointDelete={(collection, endpointId) =>
+            handleDeleteEndpoint(collection.id, endpointId)
+          }
+        />
       </SidebarContent>
       <RenameDialog
         open={renameDialogOpen}
