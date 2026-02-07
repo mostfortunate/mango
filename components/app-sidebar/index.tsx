@@ -9,6 +9,7 @@ import { Sidebar, SidebarContent, SidebarRail } from "@/components/ui/sidebar";
 import AppSidebarFooter from "@/components/app-sidebar/sidebar-footer";
 import RenameDialog from "@/components/app-sidebar/rename-dialog";
 import CollectionList from "@/components/app-sidebar/collection-list";
+import { buildEndpointLookup } from "@/components/app-sidebar/helpers";
 
 export type AppSidebarProps = ComponentProps<typeof Sidebar>;
 export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
@@ -44,12 +45,7 @@ export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
     string | null
   >(null);
 
-  const endpointLookup = new Map<string, { collectionId: string }>();
-  data.forEach((collection) => {
-    collection.endpoints.forEach((endpoint) => {
-      endpointLookup.set(endpoint.id, { collectionId: collection.id });
-    });
-  });
+  const endpointLookup = buildEndpointLookup(data);
 
   const firstCollection = data[0];
   const defaultExpandedCollectionIds = firstCollection
