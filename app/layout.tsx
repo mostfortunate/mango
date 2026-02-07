@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { WorkspaceProvider } from "@/components/workspace-provider";
 import AppSidebar from "@/components/app-sidebar";
 import Footer from "@/components/footer";
+import Navbar from "@/components/navbar";
 import "./globals.css";
 
 import { MOCK_COLLECTIONS } from "@/mocks/collections";
@@ -46,6 +47,7 @@ export default function RootLayout({
             <SidebarProvider defaultOpen={true}>
               <AppSidebar />
               <main className="flex w-full flex-1 flex-col">
+                <Navbar />
                 <div className="flex-1">{children}</div>
                 <Footer />
               </main>
