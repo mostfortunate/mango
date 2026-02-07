@@ -15,3 +15,11 @@ export const buildEndpointLookup = (
 
   return lookup;
 };
+
+export const getDefaultExpandedCollectionIds = (
+  collections: Collection[],
+): Set<string> => {
+  const firstCollection = collections[0];
+
+  return firstCollection ? new Set([firstCollection.id]) : new Set<string>();
+};
