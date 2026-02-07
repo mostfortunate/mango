@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, type ComponentProps } from "react";
-import { type Collection } from "@/app/types/models";
 import { useWorkspace } from "@/components/workspace-provider";
 
 import { Sidebar, SidebarContent, SidebarRail } from "@/components/ui/sidebar";
@@ -11,9 +10,10 @@ import RenameDialog from "@/components/app-sidebar/rename-dialog";
 import CollectionList from "@/components/app-sidebar/collection-list";
 import {
   buildEndpointLookup,
+  createAppSidebarHandlers,
   getDefaultExpandedCollectionIds,
-  getNextCollectionName,
-  resolveDefaultEndpointId,
+  getEffectiveExpandedCollectionIds,
+  getResolvedActiveEndpointId,
 } from "@/components/app-sidebar/helpers";
 
 export type AppSidebarProps = ComponentProps<typeof Sidebar>;
@@ -54,124 +54,55 @@ export default function AppSidebar({ ...sidebarProps }: AppSidebarProps) {
 
   const defaultExpandedCollectionIds = getDefaultExpandedCollectionIds(data);
 
-  const effectiveExpandedCollectionIds = hasCollectionInteraction
-    ? expandedCollectionIds
-    : defaultExpandedCollectionIds;
+  const effectiveExpandedCollectionIds = getEffectiveExpandedCollectionIds(
+    hasCollectionInteraction,
+    expandedCollectionIds,
+    defaultExpandedCollectionIds,
+  );
 
-  const resolvedActiveEndpointId = (() => {
-    if (!data.length) {
-      return null;
-    }
+  const resolvedActiveEndpointId = getResolvedActiveEndpointId(
+    data,
+    activeEndpointId,
+    endpointLookup,
+    effectiveExpandedCollectionIds,
+    lastSelectedEndpointId,
+  );
 
-    if (activeEndpointId && endpointLookup.has(activeEndpointId)) {
-      return activeEndpointId;
-    }
-
-    const expandedCollections = data.filter((collection) =>
-      effectiveExpandedCollectionIds.has(collection.id),
-    );
-    const targetCollection =
-      expandedCollections.find(
-        (collection) => collection.endpoints.length > 0,
-      ) ?? data.find((collection) => collection.endpoints.length > 0);
-
-    if (!targetCollection) {
-      return null;
-    }
-
-    return resolveDefaultEndpointId(targetCollection, lastSelectedEndpointId);
-  })();
-
-  const handleCollectionOpenChange = (
-    collection: Collection,
-    open: boolean,
-  ) => {
-    setHasCollectionInteraction(true);
-    setExpandedCollectionIds((prev) => {
-      const base = hasCollectionInteraction
-        ? prev
-        : defaultExpandedCollectionIds;
-      const next = new Set(base);
-      if (open) {
-        next.add(collection.id);
-      } else {
-        next.delete(collection.id);
-      }
-      return next;
-    });
-  };
-
-  const handleEndpointSelect = (endpointId: string) => {
-    selectEndpoint(endpointId);
-    setLastSelectedEndpointId(endpointId);
-  };
-
-  const handleAddCollection = () => {
-    const name = getNextCollectionName(data);
-
-    addCollection({
-      id: crypto.randomUUID(),
-      name,
-      baseUrl: "",
-      endpoints: [],
-    });
-  };
-
-  const handleAddEndpoint = (collectionId: string) => {
-    addEndpoint(collectionId, {
-      id: crypto.randomUUID(),
-      name: "Untitled",
-      method: draft.method,
-      url: draft.url,
-    });
-  };
-
-  const handleDeleteEndpoint = (collectionId: string, endpointId: string) => {
-    deleteEndpoint(collectionId, endpointId);
-  };
-
-  const handleRenameStart = (
-    collectionId: string,
-    endpointId: string,
-    currentName: string,
-  ) => {
-    setRenameTarget({ collectionId, endpointId });
-    setRenameValue(currentName);
-    setRenameDialogOpen(true);
-  };
-
-  const handleRenameSubmit = () => {
-    if (!renameTarget) {
-      return;
-    }
-
-    const nextName = renameValue.trim() || "Untitled";
-    renameEndpoint(
-      renameTarget.collectionId,
-      renameTarget.endpointId,
-      nextName,
-    );
-    setRenameDialogOpen(false);
-  };
-
-  const handleCollectionRenameStart = (
-    collectionId: string,
-    currentName: string,
-  ) => {
-    setCollectionRenameTarget(collectionId);
-    setCollectionRenameValue(currentName);
-    setCollectionRenameDialogOpen(true);
-  };
-
-  const handleCollectionRenameSubmit = () => {
-    if (!collectionRenameTarget) {
-      return;
-    }
-
-    const nextName = collectionRenameValue.trim() || "New Collection";
-    renameCollection(collectionRenameTarget, nextName);
-    setCollectionRenameDialogOpen(false);
-  };
+  const {
+    handleCollectionOpenChange,
+    handleEndpointSelect,
+    handleAddCollection,
+    handleAddEndpoint,
+    handleDeleteEndpoint,
+    handleRenameStart,
+    handleRenameSubmit,
+    handleCollectionRenameStart,
+    handleCollectionRenameSubmit,
+  } = createAppSidebarHandlers({
+    collections: data,
+    draft,
+    selectEndpoint,
+    addCollection,
+    addEndpoint,
+    deleteEndpoint,
+    renameEndpoint,
+    renameCollection,
+    hasCollectionInteraction,
+    defaultExpandedCollectionIds,
+    setHasCollectionInteraction,
+    setExpandedCollectionIds,
+    setLastSelectedEndpointId,
+    renameTarget,
+    renameValue,
+    setRenameTarget,
+    setRenameValue,
+    setRenameDialogOpen,
+    collectionRenameTarget,
+    collectionRenameValue,
+    setCollectionRenameTarget,
+    setCollectionRenameValue,
+    setCollectionRenameDialogOpen,
+  });
 
   return (
     <Sidebar {...sidebarProps}>
